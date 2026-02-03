@@ -1,0 +1,66 @@
+================================================================================
+                    DEPLOYMENT GUIDE - Task Manager App
+================================================================================
+
+Your app is ready to deploy! Follow these steps when you're ready.
+
+
+================================================================================
+                    STEP 1: DEPLOY BACKEND ON RENDER (FREE)
+================================================================================
+
+1. Go to: https://render.com
+2. Click "Get Started for Free" → Sign in with GitHub
+3. Click "New +" → "Web Service"
+4. Connect your repo: puspanDas/GIT-CHANGES
+5. Configure:
+   - Name: task-manager-api
+   - Root Directory: backend
+   - Runtime: Python 3
+   - Build Command: pip install -r requirements.txt
+   - Start Command: uvicorn main:app --host 0.0.0.0 --port $PORT
+6. Click "Create Web Service"
+7. Wait 2-3 minutes for deployment
+8. Copy your URL (like: https://task-manager-api.onrender.com)
+
+
+================================================================================
+                    STEP 2: DEPLOY FRONTEND ON VERCEL (FREE)
+================================================================================
+
+1. Go to: https://vercel.com
+2. Click "Sign Up" → "Continue with GitHub"
+3. Click "Add New..." → "Project"
+4. Import: puspanDas/GIT-CHANGES
+5. Configure:
+   - Root Directory: frontend
+   - Framework Preset: Vite
+6. Add Environment Variable:
+   - Name: VITE_API_URL
+   - Value: (paste your Render URL from Step 1)
+7. Click "Deploy"
+8. Wait 1-2 minutes
+9. Your app is live!
+
+
+================================================================================
+                    AFTER DEPLOYMENT
+================================================================================
+
+Your app will be available at:
+- Frontend: https://your-project.vercel.app
+- Backend API: https://task-manager-api.onrender.com
+
+Both include FREE SSL (https://) for security!
+
+
+================================================================================
+                    NOTES
+================================================================================
+
+- Render free tier sleeps after 15 min of inactivity (first request takes ~30s)
+- Vercel is always fast (no sleep)
+- Both are production-ready and secure
+- No credit card required!
+
+================================================================================
