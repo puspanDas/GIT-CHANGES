@@ -1,0 +1,892 @@
+================================================================================
+                    TASK MANAGER APPLICATION - SYSTEM DESIGN DOCUMENT
+                              (JIRA & Google Tracker Clone)
+================================================================================
+
+Created: January 28, 2026
+Version: 1.0
+
+================================================================================
+                              TABLE OF CONTENTS
+================================================================================
+
+1. PROJECT OVERVIEW
+2. SYSTEM ARCHITECTURE
+3. TECHNOLOGY STACK
+4. BACKEND DESIGN & LOGIC
+5. FRONTEND DESIGN & LOGIC
+6. DATA MODELS & STORAGE
+7. AUTHENTICATION & AUTHORIZATION
+8. REAL-TIME COLLABORATION SYSTEM
+9. AI-POWERED FEATURES
+10. GAMIFICATION SYSTEM
+11. API ENDPOINTS OVERVIEW
+12. DEPLOYMENT STEPS - PRODUCTION READY
+13. SCALING CONSIDERATIONS
+14. FUTURE ENHANCEMENTS
+
+================================================================================
+                          1. PROJECT OVERVIEW
+================================================================================
+
+This is a full-stack Task Management Application inspired by JIRA and Google 
+Task Tracker. It provides comprehensive project and task management capabilities 
+with modern features including:
+
+- Task CRUD operations with Kanban board visualization
+- Real-time collaboration with live cursors and presence indicators
+- AI-powered code suggestions and task analysis
+- Gamification with XP, levels, and leaderboards
+- Smart dependency management with AI suggestions
+- Analytics dashboard for managers
+- Role-based access control (Developer, PM, PO)
+
+================================================================================
+                        2. SYSTEM ARCHITECTURE
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              CLIENT LAYER                                    │
+│  ┌─────────────────────────────────────────────────────────────────────────┐│
+│  │                     React + Vite Frontend                               ││
+│  │  - Components (Dashboard, KanbanBoard, Analytics, etc.)                 ││
+│  │  - State Management (React Context)                                     ││
+│  │  - Real-time WebSocket Client                                           ││
+│  └─────────────────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                          HTTP/REST │ WebSocket
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           API GATEWAY LAYER                                  │
+│  ┌─────────────────────────────────────────────────────────────────────────┐│
+│  │                    FastAPI Backend Server                               ││
+│  │  - REST API Endpoints (main.py)                                         ││
+│  │  - WebSocket Handler (collaboration_service.py)                         ││
+│  │  - Authentication Middleware (auth.py)                                  ││
+│  └─────────────────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          SERVICE LAYER                                       │
+│  ┌───────────────┐ ┌───────────────┐ ┌───────────────┐ ┌───────────────┐    │
+│  │ AI Assistant  │ │ Collaboration │ │   KPI/KPI     │ │ Gamification  │    │
+│  │   Service     │ │   Service     │ │   Service     │ │   Service     │    │
+│  └───────────────┘ └───────────────┘ └───────────────┘ └───────────────┘    │
+│  ┌───────────────┐ ┌───────────────┐ ┌───────────────┐                      │
+│  │  Dependency   │ │  Codebase RAG │ │  AI Insights  │                      │
+│  │   Service     │ │   Service     │ │   Service     │                      │
+│  └───────────────┘ └───────────────┘ └───────────────┘                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          DATA LAYER                                          │
+│  ┌─────────────────────────────────────────────────────────────────────────┐│
+│  │                    JSON File Storage (data.json)                        ││
+│  │  - Users, Projects, Tasks, Comments, Gamification Data                  ││
+│  └─────────────────────────────────────────────────────────────────────────┘│
+│  ┌─────────────────────────────────────────────────────────────────────────┐│
+│  │              FAISS Vector Index (codebase_index/)                       ││
+│  │  - Code embedding vectors for RAG-based search                          ││
+│  └─────────────────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+                        3. TECHNOLOGY STACK
+================================================================================
+
+BACKEND:
+---------
+- FastAPI (v0.100+)         : High-performance async Python web framework
+- Uvicorn                   : ASGI server for running FastAPI
+- Pydantic                  : Data validation and serialization
+- Python-Jose               : JWT token generation and validation
+- Passlib + Bcrypt          : Password hashing
+- WebSockets                : Real-time bidirectional communication
+- Sentence-Transformers     : Text embeddings for AI features
+- FAISS                     : Vector similarity search for RAG
+- Pandas + OpenPyXL         : Excel export functionality
+- Scikit-learn              : Machine learning utilities
+
+FRONTEND:
+---------
+- React 18.3                : Component-based UI library
+- Vite 6.0                  : Fast build tool and dev server
+- React Router DOM 6.28     : Client-side routing
+- Axios                     : HTTP client for API calls
+- Framer Motion             : Animations and transitions
+- React Beautiful DND       : Drag-and-drop for Kanban board
+- Recharts                  : Data visualization charts
+- AG Grid                   : Advanced data grid component
+- Lucide React              : Icon library
+- TailwindCSS               : Utility-first CSS framework
+
+================================================================================
+                      4. BACKEND DESIGN & LOGIC
+================================================================================
+
+4.1 CORE MODULES:
+-----------------
+
+main.py (API Entry Point)
+- Defines all REST API endpoints
+- Configures CORS middleware for cross-origin requests
+- Mounts static file serving for uploads
+- Implements WebSocket endpoint for real-time features
+- Route categories: Auth, Users, Projects, Tasks, Comments, Analytics, AI
+
+auth.py (Authentication & Authorization)
+- JWT token-based authentication
+- Password hashing with bcrypt
+- Token expiration handling (30 minutes default)
+- Role-based access control decorators:
+  * get_current_user_json: Any authenticated user
+  * require_manager_role: PM/PO only access
+
+json_storage.py (Data Persistence)
+- File-based JSON storage for simplicity
+- Atomic read/write operations
+- Data structure: users, projects, tasks, comments, gamification
+
+schemas.py (Data Validation)
+- Pydantic models for request/response validation
+- User, Project, Task, Comment schemas
+- Automatic validation and serialization
+
+4.2 SERVICE MODULES:
+--------------------
+
+ai_assistant.py (AI Pair Programming)
+- Pattern-based code suggestions
+- Task complexity estimation using keyword analysis
+- Subtask generation for complex tasks
+- Code hints for common patterns (JWT, React, Testing)
+- Algorithm: O(k) keyword matching using Set operations
+
+ai_insights.py (AI Analytics)
+- Predictive sprint completion analysis
+- Resource optimization suggestions
+- Bottleneck detection
+- Trend analysis for productivity
+
+collaboration_service.py (Real-time Collaboration)
+- WebSocket connection management
+- Presence tracking (who's online)
+- Live cursor sharing
+- Typing indicators
+- Task edit locking to prevent conflicts
+- Broadcast messaging to task viewers
+
+dependency_service.py (Smart Dependencies)
+- Task dependency graph management
+- Circular dependency detection (DFS algorithm)
+- AI-based dependency suggestions
+- Blocked task identification
+- Graph visualization data generation
+
+kpi_service.py (KPI & Analytics)
+- Task completion velocity calculation
+- Team performance metrics
+- Risk detection algorithms
+- Sprint health scoring
+- Individual developer statistics
+
+gamification_service.py (Gamification Engine)
+- XP calculation and awarding
+- Level progression system
+- Achievement tracking
+- Leaderboard generation
+- Streak tracking
+
+codebase_rag_service.py (Codebase Search)
+- Code file indexing
+- Vector embedding generation
+- Semantic similarity search
+- RAG-based code Q&A
+
+================================================================================
+                      5. FRONTEND DESIGN & LOGIC
+================================================================================
+
+5.1 COMPONENT ARCHITECTURE:
+---------------------------
+
+App.jsx (Root Component)
+└── Router Configuration
+    ├── / (Login)
+    ├── /register (Register)
+    └── /dashboard (Dashboard - Protected)
+
+Dashboard.jsx (Main Application Shell)
+├── Sidebar Navigation
+├── Header with User Info
+└── Main Content Area
+    ├── KanbanBoard.jsx      : Drag-drop task board
+    ├── ListView.jsx         : Table view of tasks
+    ├── CalendarView.jsx     : Calendar-based view
+    ├── TaskDetailView.jsx   : Task details modal
+    ├── Analytics.jsx        : Manager analytics dashboard
+    ├── SprintPlanner.jsx    : Sprint planning tool
+    ├── DependencyGraph.jsx  : Task dependency visualization
+    └── Leaderboard.jsx      : Gamification leaderboard
+
+5.2 REAL-TIME COLLABORATION COMPONENTS:
+---------------------------------------
+
+CollaborationProvider.jsx
+- WebSocket connection management
+- React Context for collaboration state
+- Handles connection/reconnection logic
+
+PresenceIndicator.jsx
+- Shows online team members
+- Real-time status updates
+
+LiveCursors.jsx
+- Renders other users' cursor positions
+- Smooth cursor animations
+
+5.3 AI FEATURE COMPONENTS:
+--------------------------
+
+AIAssistantPanel.jsx
+- Code suggestion display
+- Task complexity analysis UI
+- Subtask recommendations
+
+CodebaseChat.jsx
+- RAG-powered code search
+- Natural language code queries
+
+5.4 STATE MANAGEMENT:
+---------------------
+- React useState for local component state
+- React Context for global state (auth, collaboration)
+- WebSocket events for real-time state sync
+
+5.5 UI DESIGN PATTERNS:
+-----------------------
+- Glassmorphism effects with backdrop blur
+- Dark mode with vibrant accent colors
+- Animations using Framer Motion
+- Responsive design with TailwindCSS
+- Floating orb background animations
+
+================================================================================
+                     6. DATA MODELS & STORAGE
+================================================================================
+
+6.1 USER MODEL:
+---------------
+{
+  "id": <int>,
+  "username": <string>,
+  "email": <string>,
+  "hashed_password": <string>,
+  "role": "developer" | "pm" | "po",
+  "xp": <int>,
+  "level": <int>,
+  "achievements": [<string>],
+  "streak": <int>,
+  "last_login": <timestamp>
+}
+
+6.2 PROJECT MODEL:
+------------------
+{
+  "id": <int>,
+  "name": <string>,
+  "description": <string>,
+  "owner_id": <int>,
+  "created_at": <timestamp>
+}
+
+6.3 TASK MODEL:
+---------------
+{
+  "id": <int>,
+  "title": <string>,
+  "description": <string>,
+  "project_id": <int>,
+  "assignee_id": <int>,
+  "reporter_id": <int>,
+  "status": "todo" | "in_progress" | "review" | "done",
+  "priority": "low" | "medium" | "high" | "critical",
+  "story_points": <int>,
+  "due_date": <date>,
+  "created_at": <timestamp>,
+  "updated_at": <timestamp>,
+  "dependencies": [<task_id>],
+  "attachments": [<file_path>]
+}
+
+6.4 COMMENT MODEL:
+------------------
+{
+  "id": <int>,
+  "task_id": <int>,
+  "user_id": <int>,
+  "content": <string>,
+  "created_at": <timestamp>
+}
+
+================================================================================
+                   7. AUTHENTICATION & AUTHORIZATION
+================================================================================
+
+7.1 AUTHENTICATION FLOW:
+------------------------
+1. User submits credentials (username/password)
+2. Backend validates against hashed password (bcrypt)
+3. If valid, generates JWT token with:
+   - user_id
+   - username
+   - role
+   - expiration time (30 minutes)
+4. Token returned to client
+5. Client stores token in localStorage
+6. All subsequent requests include token in Authorization header
+
+7.2 AUTHORIZATION LEVELS:
+-------------------------
+
+DEVELOPER:
+- Create/Update/View tasks
+- Add comments
+- Use AI assistant features
+- View personal gamification stats
+
+PROJECT MANAGER (PM):
+- All developer permissions
+- Access analytics dashboard
+- View team KPIs
+- Create sprints
+
+PRODUCT OWNER (PO):
+- All PM permissions
+- Full project access
+- Risk assessment access
+
+================================================================================
+                  8. REAL-TIME COLLABORATION SYSTEM
+================================================================================
+
+8.1 WEBSOCKET MESSAGE TYPES:
+----------------------------
+
+PRESENCE EVENTS:
+- user_joined: New user came online
+- user_left: User went offline
+- presence_sync: Full presence state sync
+
+CURSOR EVENTS:
+- cursor_move: User cursor position update
+- cursor_leave: User stopped viewing task
+
+TASK EVENTS:
+- task_update: Task was modified
+- task_create: New task created
+- task_delete: Task was deleted
+
+LOCK EVENTS:
+- lock_acquired: User started editing task
+- lock_released: User finished editing
+- lock_denied: Another user is editing
+
+TYPING EVENTS:
+- typing_start: User began typing
+- typing_stop: User stopped typing
+
+8.2 CONFLICT RESOLUTION:
+------------------------
+- Optimistic locking with task version tracking
+- First-come-first-served edit lock acquisition
+- 5-minute auto-release for stale locks
+- Real-time update broadcasting to resolve conflicts
+
+================================================================================
+                      9. AI-POWERED FEATURES
+================================================================================
+
+9.1 CODE SUGGESTION ENGINE:
+---------------------------
+Algorithm:
+1. Extract keywords from task title/description
+2. Match against predefined patterns (auth, api, ui, testing, etc.)
+3. Return relevant code templates and best practices
+4. Provide resource links and documentation
+
+9.2 COMPLEXITY ESTIMATION:
+--------------------------
+Factors analyzed:
+- Keyword complexity scores
+- Description length
+- Technical term density
+- Estimated hours calculation
+
+Output: Low/Medium/High complexity with reasoning
+
+9.3 SUBTASK GENERATION:
+-----------------------
+Process:
+1. Analyze task description
+2. Identify component parts
+3. Generate atomic subtasks
+4. Estimate per-subtask complexity
+
+9.4 DEPENDENCY SUGGESTIONS:
+---------------------------
+- Keyword overlap analysis
+- Project relationship analysis
+- Historical dependency patterns
+- Priority-based suggestions
+
+9.5 CODEBASE RAG (Retrieval Augmented Generation):
+--------------------------------------------------
+- Index codebase files with vector embeddings
+- Semantic search for relevant code
+- Context-aware code Q&A
+- Natural language code navigation
+
+================================================================================
+                     10. GAMIFICATION SYSTEM
+================================================================================
+
+10.1 XP SYSTEM:
+---------------
+Actions and XP rewards:
+- Create Task:      10 XP
+- Complete Task:    25 XP + (story_points * 5)
+- Add Comment:       5 XP
+- Daily Login:      15 XP
+- First Login:      50 XP
+- Perfect Sprint:  100 XP bonus
+
+10.2 LEVEL PROGRESSION:
+-----------------------
+Level = floor(sqrt(XP / 100))
+
+Level | XP Required
+------|-----------
+1     | 100
+2     | 400
+3     | 900
+4     | 1600
+5     | 2500
+...
+
+10.3 ACHIEVEMENTS:
+------------------
+- First Task:       Complete first task
+- Speed Demon:      Complete 5 tasks in one day
+- Team Player:      Comment on 10 tasks
+- Sprint Champion:  Complete all tasks in a sprint
+- Streak Master:    7-day login streak
+
+10.4 LEADERBOARD:
+-----------------
+- Weekly/Monthly/All-time rankings
+- Top performers highlighted
+- Department/Project filtering
+
+================================================================================
+                   11. API ENDPOINTS OVERVIEW
+================================================================================
+
+AUTHENTICATION:
+---------------
+POST /token              - Login and get JWT token
+POST /users              - Register new user
+
+USERS:
+------
+GET  /users              - List all users
+GET  /users/me           - Get current user
+
+PROJECTS:
+---------
+GET  /projects           - List projects
+POST /projects           - Create project
+
+TASKS:
+------
+GET  /tasks              - List tasks (optional project filter)
+POST /tasks              - Create task
+PUT  /tasks/{id}         - Update task
+GET  /tasks/export       - Export tasks to Excel
+
+COMMENTS:
+---------
+GET  /tasks/{id}/comments     - Get task comments
+POST /tasks/{id}/comments     - Add comment
+
+DEPENDENCIES:
+-------------
+GET  /tasks/{id}/dependencies        - Get task dependencies
+POST /tasks/{id}/dependencies/{did}  - Add dependency
+DELETE /tasks/{id}/dependencies/{did} - Remove dependency
+GET  /tasks/{id}/suggested-dependencies - AI suggestions
+GET  /projects/{id}/dependency-graph   - Full project graph
+GET  /tasks/blocked                  - Get blocked tasks
+
+ANALYTICS (Manager Only):
+-------------------------
+GET  /analytics/kpis             - Get all KPIs
+GET  /analytics/velocity         - Task velocity
+GET  /analytics/team-performance - Per-developer metrics
+GET  /analytics/risks            - Risk detection
+GET  /analytics/insights         - AI insights
+GET  /analytics/sprint-prediction - Sprint forecast
+GET  /analytics/team-health      - Health score
+
+AI ASSISTANT:
+-------------
+GET  /ai/code-suggestions/{id}   - Get code suggestions
+GET  /ai/task-analysis/{id}      - Complexity analysis
+GET  /ai/subtasks/{id}           - Subtask suggestions
+
+COLLABORATION:
+--------------
+GET  /collaboration/active-users   - Online users
+GET  /collaboration/task/{id}/viewers - Task viewers
+GET  /collaboration/stats          - Collaboration metrics
+
+GAMIFICATION:
+-------------
+GET  /gamification/xp/{user_id}    - Get user XP
+GET  /gamification/leaderboard     - Get leaderboard
+
+WEBSOCKET:
+----------
+WS   /ws/{client_id}             - Real-time collaboration
+
+================================================================================
+          12. DEPLOYMENT STEPS - PRODUCTION READY APPLICATION
+================================================================================
+
+STEP 1: PREREQUISITES
+---------------------
+Ensure you have installed:
+- Python 3.9+
+- Node.js 18+
+- npm or yarn
+- Git
+
+STEP 2: DATABASE MIGRATION (Recommended for Production)
+-------------------------------------------------------
+Current: JSON file storage (data.json)
+Recommended Migration Path:
+
+Option A: PostgreSQL (Recommended)
+1. Install PostgreSQL
+2. Create database: CREATE DATABASE taskmanager;
+3. Install SQLAlchemy: pip install sqlalchemy asyncpg
+4. Update json_storage.py to use SQLAlchemy ORM
+5. Run migrations: alembic upgrade head
+
+Option B: MongoDB
+1. Install MongoDB
+2. Install motor: pip install motor
+3. Replace JSON operations with MongoDB operations
+
+STEP 3: ENVIRONMENT CONFIGURATION
+---------------------------------
+Create .env file in backend directory:
+
+# Backend .env
+DATABASE_URL=postgresql://user:password@localhost:5432/taskmanager
+SECRET_KEY=your-very-long-and-secure-secret-key-here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
+CORS_ORIGINS=https://yourdomain.com
+ENVIRONMENT=production
+
+# Optional: AI Services
+OPENAI_API_KEY=sk-...  # For enhanced AI features
+GOOGLE_API_KEY=...     # For Google embeddings
+
+STEP 4: BACKEND DEPLOYMENT OPTIONS
+----------------------------------
+
+Option A: Traditional VPS (DigitalOcean, AWS EC2, etc.)
+-------------------------------------------------------
+1. SSH into server
+2. Clone repository:
+   git clone https://github.com/yourusername/task-manager.git
+3. Install dependencies:
+   cd backend
+   pip install -r requirements.txt
+4. Configure Gunicorn with Uvicorn workers:
+   gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
+5. Set up systemd service for auto-restart:
+   
+   /etc/systemd/system/taskmanager.service:
+   [Unit]
+   Description=Task Manager Backend
+   After=network.target
+   
+   [Service]
+   User=www-data
+   WorkingDirectory=/path/to/backend
+   ExecStart=/path/to/venv/bin/gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker
+   Restart=always
+   
+   [Install]
+   WantedBy=multi-user.target
+
+6. Enable and start:
+   sudo systemctl enable taskmanager
+   sudo systemctl start taskmanager
+
+Option B: Docker Deployment (Recommended)
+-----------------------------------------
+1. Create Dockerfile for backend:
+   
+   FROM python:3.11-slim
+   WORKDIR /app
+   COPY requirements.txt .
+   RUN pip install --no-cache-dir -r requirements.txt
+   COPY . .
+   CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+2. Create docker-compose.yml:
+   
+   version: '3.8'
+   services:
+     backend:
+       build: ./backend
+       ports:
+         - "8000:8000"
+       environment:
+         - DATABASE_URL=postgresql://postgres:password@db:5432/taskmanager
+       depends_on:
+         - db
+     
+     frontend:
+       build: ./frontend
+       ports:
+         - "80:80"
+     
+     db:
+       image: postgres:15
+       environment:
+         - POSTGRES_PASSWORD=password
+         - POSTGRES_DB=taskmanager
+       volumes:
+         - postgres_data:/var/lib/postgresql/data
+   
+   volumes:
+     postgres_data:
+
+3. Deploy:
+   docker-compose up -d
+
+Option C: Cloud Platform (Heroku, Railway, Render)
+--------------------------------------------------
+1. Create Procfile:
+   web: uvicorn main:app --host 0.0.0.0 --port $PORT
+
+2. Push to platform:
+   heroku create task-manager-api
+   git push heroku main
+
+Option D: AWS/GCP/Azure Managed Services
+----------------------------------------
+1. Use AWS App Runner, GCP Cloud Run, or Azure Container Apps
+2. Configure with container image
+3. Set environment variables in console
+4. Configure auto-scaling rules
+
+STEP 5: FRONTEND DEPLOYMENT
+---------------------------
+
+1. Build production bundle:
+   cd frontend
+   npm install
+   npm run build
+
+2. Output is in /frontend/dist folder
+
+Option A: Static Hosting (Netlify, Vercel, Cloudflare Pages)
+------------------------------------------------------------
+1. Connect GitHub repository
+2. Set build command: npm run build
+3. Set publish directory: dist
+4. Add environment variable:
+   VITE_API_URL=https://api.yourdomain.com
+
+Option B: Nginx (Traditional VPS)
+---------------------------------
+1. Copy dist folder to server:
+   scp -r dist/* user@server:/var/www/taskmanager
+
+2. Configure Nginx:
+   
+   /etc/nginx/sites-available/taskmanager:
+   server {
+       listen 80;
+       server_name yourdomain.com;
+       root /var/www/taskmanager;
+       
+       location / {
+           try_files $uri $uri/ /index.html;
+       }
+       
+       location /api {
+           proxy_pass http://localhost:8000;
+           proxy_http_version 1.1;
+           proxy_set_header Upgrade $http_upgrade;
+           proxy_set_header Connection "upgrade";
+       }
+       
+       location /ws {
+           proxy_pass http://localhost:8000;
+           proxy_http_version 1.1;
+           proxy_set_header Upgrade $http_upgrade;
+           proxy_set_header Connection "upgrade";
+       }
+   }
+
+3. Enable site and restart:
+   sudo ln -s /etc/nginx/sites-available/taskmanager /etc/nginx/sites-enabled/
+   sudo nginx -t
+   sudo systemctl restart nginx
+
+STEP 6: SSL CERTIFICATE (Required for Production)
+-------------------------------------------------
+Using Let's Encrypt with Certbot:
+
+1. Install Certbot:
+   sudo apt install certbot python3-certbot-nginx
+
+2. Obtain certificate:
+   sudo certbot --nginx -d yourdomain.com
+
+3. Auto-renewal is configured automatically
+
+STEP 7: CONFIGURE WEBSOCKET FOR PRODUCTION
+-------------------------------------------
+1. Ensure reverse proxy supports WebSocket
+2. Configure proper timeouts
+3. Add health checks for connection stability
+
+STEP 8: MONITORING & LOGGING
+----------------------------
+1. Set up application monitoring:
+   - Sentry for error tracking
+   - DataDog/New Relic for APM
+   
+2. Configure logging:
+   import logging
+   logging.basicConfig(level=logging.INFO)
+
+3. Set up alerts for:
+   - High error rates
+   - Slow response times
+   - WebSocket disconnections
+
+STEP 9: BACKUP STRATEGY
+-----------------------
+1. Database: Daily automated backups
+2. File uploads: Sync to S3/GCS bucket
+3. Codebase: Version controlled in Git
+
+================================================================================
+                   13. SCALING CONSIDERATIONS
+================================================================================
+
+HORIZONTAL SCALING:
+-------------------
+- Use load balancer (Nginx, HAProxy, AWS ELB)
+- Session/WebSocket sticky sessions required
+- Redis for shared session state
+- Multiple backend instances
+
+VERTICAL SCALING:
+-----------------
+- Increase CPU/RAM as needed
+- Optimize database queries
+- Add caching layer (Redis)
+
+CACHING STRATEGY:
+-----------------
+- Redis for session storage
+- Task/Project caching (5-minute TTL)
+- API response caching for analytics
+
+DATABASE OPTIMIZATION:
+----------------------
+- Add indexes on frequently queried fields
+- Implement connection pooling
+- Consider read replicas
+
+================================================================================
+                     14. FUTURE ENHANCEMENTS
+================================================================================
+
+PLANNED FEATURES:
+-----------------
+1. Mobile Application (React Native)
+2. Email Notifications & Webhooks
+3. GitHub/GitLab Integration
+4. Time Tracking Module
+5. Advanced Reporting & Exports
+6. Custom Field Support
+7. Workflow Automation (Rules Engine)
+8. Multi-language Support (i18n)
+9. Dark/Light Theme Toggle
+10. Calendar Integration (Google Calendar, Outlook)
+
+TECHNICAL IMPROVEMENTS:
+-----------------------
+1. Migrate to PostgreSQL for production
+2. Implement GraphQL API
+3. Add comprehensive test suite (pytest, Jest)
+4. CI/CD Pipeline (GitHub Actions)
+5. Feature flags for gradual rollouts
+6. API rate limiting
+7. Enhanced AI with GPT-4 integration
+8. Kubernetes deployment manifests
+
+================================================================================
+                           QUICK START GUIDE
+================================================================================
+
+LOCAL DEVELOPMENT:
+------------------
+
+1. Start Backend:
+   cd backend
+   pip install -r requirements.txt
+   uvicorn main:app --reload --port 8000
+
+2. Start Frontend:
+   cd frontend
+   npm install
+   npm run dev
+
+3. Open browser:
+   http://localhost:5173
+
+4. Default test credentials:
+   - Create a new account via /register
+   - Or use the API to seed test data
+
+USING run_app.py:
+-----------------
+python run_app.py
+- Starts both frontend and backend simultaneously
+- Monitors for crashes and auto-restarts
+- Press Ctrl+C to stop
+
+================================================================================
+                              END OF DOCUMENT
+================================================================================
+
+Document created by: System Design Team
+Last updated: January 28, 2026
+For questions, contact: project-team@example.com
+
+================================================================================

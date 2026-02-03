@@ -1,0 +1,68 @@
+# RAG Chat Feature - Commands Reference
+# =====================================
+# Uses local sentence-transformers + FAISS (works offline, no API limits)
+
+## Installation Commands
+# Run these commands in the backend directory:
+
+pip install sentence-transformers>=2.2.0
+pip install faiss-cpu>=1.7.4
+
+# If you encounter numpy compatibility issues:
+pip install --upgrade scikit-learn pandas
+
+
+## Running the Application
+# From the project root directory:
+
+python run_app.py
+
+# This starts both:
+# - Backend (FastAPI) on http://localhost:8000
+# - Frontend (Vite) on http://localhost:5173
+
+
+## Testing RAG Service (Python)
+# From the backend directory:
+
+# Test import:
+python -c "import codebase_rag_service; print('RAG service imports successfully')"
+
+# Test indexing (creates vector index from Python files):
+python -c "import codebase_rag_service; result = codebase_rag_service.index_codebase(); print(result)"
+
+# Test query:
+python -c "import codebase_rag_service; result = codebase_rag_service.query_codebase('Where is password validation?'); print(result['explanation'])"
+
+
+## API Endpoints (when app is running)
+
+# Check index status:
+# GET http://localhost:8000/rag/status
+
+# Rebuild index:
+# POST http://localhost:8000/rag/index
+
+# Query codebase:
+# POST http://localhost:8000/rag/chat
+# Body: {"question": "Where is password validation?"}
+
+# Note: All endpoints require authentication (Bearer token)
+
+
+## Files Created/Modified
+
+# New files:
+# - backend/codebase_rag_service.py (RAG service with FAISS)
+# - frontend/src/components/CodebaseChat.jsx (Chat UI component)
+
+# Modified files:
+# - backend/requirements.txt (added sentence-transformers, faiss-cpu)
+# - backend/main.py (added /rag/* endpoints)
+# - backend/schemas.py (added CodebaseQuery schema)
+# - frontend/src/api.js (added RAG API functions)
+# - frontend/src/components/Dashboard.jsx (integrated CodebaseChat)
+
+# Generated files (auto-created on first index):
+# - backend/codebase_index/faiss.index
+# - backend/codebase_index/chunks.pkl
