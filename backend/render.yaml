@@ -1,0 +1,12 @@
+# Render deployment configuration
+# This file tells Render how to build and run your Python backend
+
+services:
+  - type: web
+    name: task-manager-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
