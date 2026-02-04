@@ -37,3 +37,6 @@ backend/codebase_index/
 # Utility scripts (not needed in repo)
 git_push.py
 migrate_users.py
+
+# Agent private files
+.agent/
