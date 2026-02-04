@@ -339,196 +339,515 @@ def _generate_topic_explanation(question: str, top_result: Dict, all_results: Li
     
     # Task creation flow
     if "task" in question and ("create" in question or "created" in question or "add" in question):
-        return """## 📋 How Tasks Are Created
+        return """## 📋 How to Create a Task
 
-**Step-by-step process:**
+**Step-by-step guide:**
 
-1. **Frontend Request**
-   - User fills out the task form in `Dashboard.jsx`
-   - Clicks "Create Task" → calls `createTask()` in `api.js`
+1. **Open the Dashboard**
+   - Log in to your account
+   - You'll see the main dashboard with your projects
 
-2. **API Endpoint** (`main.py`)
-   - `POST /tasks/` receives the request
-   - Validates user authentication via `auth.get_current_user_json`
+2. **Click "Create Task" Button**
+   - Find the "+ Create Task" button in the sidebar or toolbar
+   - A task creation form will appear
 
-3. **AI Priority Detection** (`ml_service.py`)
-   - If no priority specified, AI analyzes the description
-   - Automatically assigns LOW/MEDIUM/HIGH/CRITICAL
+3. **Fill in Task Details**
+   - **Title**: Give your task a clear, descriptive name
+   - **Description**: Add details about what needs to be done
+   - **Priority**: Choose LOW, MEDIUM, HIGH, or CRITICAL (or let AI auto-detect)
+   - **Assignee**: Select who should work on this task
+   - **Project**: Choose which project this task belongs to
+   - **Labels**: Add optional labels for organization
 
-4. **Database Storage** (`json_storage.py`)
-   - `create_task()` generates a unique task ID
-   - Saves to `data.json` with all task properties
-   - Returns the created task object
+4. **Submit the Task**
+   - Click "Create" or "Save" button
+   - Your task will appear on the Kanban board in the "TODO" column
 
-5. **Response**
-   - Task data returned to frontend
-   - UI updates to show the new task
+5. **Manage Your Task**
+   - Drag and drop between columns (TODO → IN_PROGRESS → DONE)
+   - Click on a task to view details, add comments, or attach files
 
-**Key files:** `main.py` (endpoint), `json_storage.py` (storage), `ml_service.py` (AI priority)"""
+💡 **Tip:** If you don't set a priority, our AI will automatically analyze your task description and suggest one!"""
 
     # Password/Auth flow
     elif "password" in question or "auth" in question or "login" in question:
-        return """## 🔐 How Authentication Works
+        return """## 🔐 How to Log In
 
-**Step-by-step process:**
+**Step-by-step guide:**
 
-1. **User Login** (Frontend)
-   - User enters credentials in `Login.jsx`
-   - Calls `POST /token` endpoint
+1. **Go to Login Page**
+   - Open the app in your browser
+   - Click "Login" if you're on the registration page
 
-2. **Password Verification** (`auth.py`)
-   - `verify_password()` extracts salt from stored hash
-   - Re-hashes input with same salt
-   - Compares hashes (SHA256 with salt)
+2. **Enter Your Credentials**
+   - **Username**: Enter your registered username
+   - **Password**: Enter your password
 
-3. **Token Generation** (`auth.py`)
-   - `create_access_token()` creates JWT
-   - Contains username, role, expiration (30 min)
-   - Signed with SECRET_KEY
+3. **Click Login**
+   - Press the "Sign In" or "Login" button
+   - You'll be redirected to the dashboard
 
-4. **Subsequent Requests**
-   - Frontend stores token in localStorage
-   - Sends `Authorization: Bearer <token>` header
-   - `get_current_user_json()` validates each request
+4. **Stay Logged In**
+   - Your session lasts for 30 minutes
+   - After that, you may need to log in again
 
-**Key files:** `auth.py` (password + JWT), `main.py` (login endpoint)"""
+❌ **Forgot Password?**
+   - Currently, contact your administrator to reset it
+
+🔒 **Security Note:** Your password is securely encrypted and never stored in plain text."""
 
     # Dependency graph flow  
     elif "dependency" in question or "graph" in question:
-        return """## 🔗 How the Dependency Graph Works
+        return """## 🔗 How to Use Task Dependencies
 
-**Step-by-step process:**
+**What are dependencies?**
+Dependencies let you define which tasks must be completed before others can start.
 
-1. **Dependency Storage**
-   - Each task has a `dependencies` field (list of task IDs)
-   - Stored in `data.json` via `json_storage.py`
+**Step-by-step guide:**
 
-2. **Graph Construction** (`dependency_service.py`)
-   - `get_dependency_graph()` builds nodes & edges
-   - Each task = node, each dependency = edge
+1. **View Dependencies**
+   - Click on any task to open its details
+   - Look for the "Dependencies" section
 
-3. **AI Suggestions**
-   - `suggest_dependencies()` analyzes task descriptions
-   - Uses keyword matching to find related tasks
-   - Detects patterns like "depends on #123"
+2. **Add a Dependency**
+   - In the task detail view, click "Add Dependency"
+   - Select the task that must be completed first
+   - The current task will be "blocked" until the dependency is done
 
-4. **Circular Reference Check**
-   - `validate_dependency()` prevents cycles
-   - Uses DFS to detect if adding creates a loop
+3. **View Dependency Graph**
+   - Go to "Dependency Graph" from the sidebar
+   - See a visual map of all task relationships
+   - Red nodes = blocked tasks, Green = ready to work
 
-5. **Frontend Visualization** (`DependencyGraph.jsx`)
-   - Renders interactive graph with vis.js
-   - Shows blocked vs. ready tasks
+4. **AI Suggestions**
+   - The system automatically suggests dependencies
+   - Based on task descriptions and keywords
+   - Accept or dismiss suggestions with one click
 
-**Key files:** `dependency_service.py` (logic), `DependencyGraph.jsx` (UI)"""
+⚠️ **Note:** You cannot create circular dependencies (e.g., A depends on B, B depends on A)."""
 
     # User/Registration flow
     elif "user" in question or "register" in question:
-        return """## 👤 How User Registration Works
+        return """## 👤 How to Register an Account
 
-**Step-by-step process:**
+**Step-by-step guide:**
 
-1. **Registration Form** (`Register.jsx`)
-   - User enters username, email, password, role
-   - Calls `POST /users/` endpoint
+1. **Go to Registration Page**
+   - Open the app and click "Register" or "Sign Up"
 
-2. **Validation** (`main.py`)
-   - Checks if username already exists
-   - Checks if email already registered
-   - Returns 400 error if duplicate found
+2. **Fill in Your Details**
+   - **Username**: Choose a unique username
+   - **Email**: Enter your email address
+   - **Password**: Create a secure password
+   - **Role**: Select your role:
+     - **Developer**: Can create and manage tasks
+     - **PM** (Project Manager): Can access analytics and sprint planning
+     - **PO** (Product Owner): Same as PM with additional permissions
 
-3. **Password Hashing** (`auth.py`)
-   - `get_password_hash()` generates random salt
-   - Creates SHA256 hash of (password + salt)
-   - Stores as "salt:hash" format for later verification
+3. **Submit Registration**
+   - Click "Register" or "Create Account"
+   - You'll receive a welcome confirmation email
 
-4. **Storage** (`json_storage.py`)
-   - `create_user()` assigns unique user ID
-   - Saves to `data.json` users array
+4. **Start Using the App**
+   - Log in with your new credentials
+   - You're ready to create tasks and collaborate!
 
-**Key files:** `auth.py` (hashing), `json_storage.py` (storage), `schemas.py` (validation)"""
+💡 **Tip:** Choose your role carefully - it determines what features you can access."""
 
     # Project flow
     elif "project" in question:
-        return """## 📁 How Projects Work
+        return """## 📁 How to Use Projects
 
-**Step-by-step process:**
+**What are projects?**
+Projects help you organize related tasks together.
 
-1. **Create Project**
-   - `POST /projects/` with name & description
-   - `json_storage.create_project()` saves it
+**Step-by-step guide:**
 
-2. **Task Association**
-   - Tasks have optional `project_id` field
-   - Filter tasks by project via `GET /tasks/?project_id=X`
+1. **Create a Project**
+   - Click "Create Project" in the sidebar
+   - Enter a project name and description
+   - Click "Save"
 
-3. **Project Selection** (Frontend)
-   - `Dashboard.jsx` shows project dropdown
-   - Selecting a project filters tasks view
+2. **Assign Tasks to Projects**
+   - When creating a task, select a project from the dropdown
+   - Existing tasks can be moved to projects via edit
 
-**Key files:** `main.py` (endpoints), `json_storage.py` (storage)"""
+3. **Filter by Project**
+   - Use the project dropdown in the dashboard
+   - Only tasks from that project will be shown
+
+4. **View All Tasks**
+   - Select "All Projects" to see everything
+
+💡 **Tip:** Use projects to separate different features, sprints, or client work."""
 
     # Comment flow
     elif "comment" in question:
-        return """## 💬 How Comments Work
+        return """## 💬 How to Comment on Tasks
 
-**Step-by-step process:**
+**Step-by-step guide:**
 
-1. **View Task Details**
-   - Click task → opens `TaskDetailView.jsx`
-   - Fetches comments via `GET /tasks/{id}/comments`
+1. **Open a Task**
+   - Click on any task card to view its details
 
-2. **Add Comment**
-   - User types comment, optionally attaches files
-   - Files uploaded via `POST /upload/` first
-   - Comment saved via `POST /tasks/{id}/comments`
+2. **View Existing Comments**
+   - Scroll down to see the comments section
+   - Comments are shown with author name and timestamp
 
-3. **Storage** (`json_storage.py`)
-   - `create_comment()` stores content, user, attachments
-   - Comments sorted by created_at (newest first)
+3. **Add a New Comment**
+   - Type your message in the text box at the bottom
+   - Click "Post" or press Enter to submit
 
-**Key files:** `main.py` (endpoints), `json_storage.py` (storage), `TaskDetailView.jsx` (UI)"""
+4. **Attach Files (Optional)**
+   - Click the attachment icon 📎
+   - Select files from your computer
+   - Supported: images, documents, etc.
+
+💡 **Tip:** Use comments to discuss task details, ask questions, or share updates with your team."""
 
     # Analytics flow
     elif "analytics" in question or "kpi" in question:
-        return """## 📊 How Analytics Work
+        return """## 📊 How to Use Analytics
 
-**Step-by-step process:**
+**Who can access?**
+Only Project Managers (PM) and Product Owners (PO) can view analytics.
 
-1. **Access Control**
-   - Only PM/PO roles can access analytics
-   - `require_manager_role()` checks user role
+**Step-by-step guide:**
 
-2. **KPI Calculation** (`kpi_service.py`)
-   - Analyzes all tasks for completion rates
-   - Calculates velocity (tasks/day)
-   - Identifies overdue and blocked tasks
+1. **Open Analytics Dashboard**
+   - Click "Analytics" in the sidebar (only visible for PM/PO)
 
-3. **AI Insights** (`ai_insights.py`)
+2. **View Key Metrics**
+   - **Task Completion Rate**: Percentage of done tasks
+   - **Team Velocity**: Tasks completed per day/week
+   - **Overdue Tasks**: Tasks past their deadline
+   - **Blocked Tasks**: Tasks waiting on dependencies
+
+3. **AI Insights**
+   - Sprint completion predictions
+   - Team health score
+   - Workload distribution recommendations
+
+4. **Team Performance**
+   - See individual developer metrics
+   - Track who's completing the most tasks
+   - Identify bottlenecks
+
+💡 **Tip:** Check analytics weekly to spot trends and adjust sprint planning."""
+
+    # Kanban board flow
+    elif "kanban" in question or "board" in question or "drag" in question or "drop" in question or "column" in question:
+        return """## 📊 How to Use the Kanban Board
+
+**What is a Kanban Board?**
+A visual way to track task progress through columns: TODO → IN_PROGRESS → DONE
+
+**Step-by-step guide:**
+
+1. **View Your Board**
+   - Open a project from the dashboard
+   - Tasks are organized in columns by status
+
+2. **Move Tasks (Drag & Drop)**
+   - Click and hold a task card
+   - Drag it to a different column
+   - Release to update its status automatically
+
+3. **Columns Explained**
+   - **TODO**: Tasks not yet started
+   - **IN_PROGRESS**: Tasks being worked on
+   - **DONE**: Completed tasks
+
+4. **Quick Actions**
+   - Click a task to view details
+   - See who's assigned and the priority
+   - Add comments directly from the card
+
+💡 **Tip:** Complete tasks to earn XP and level up!"""
+
+    # Gamification/XP flow
+    elif "xp" in question or "level" in question or "gamification" in question or "points" in question or "leaderboard" in question or "champion" in question:
+        return """## 🎮 Gamification & XP System
+
+**Earn XP by completing tasks!**
+
+**How XP Works:**
+
+1. **Earning XP**
+   - Complete a task → Earn XP based on priority:
+     - LOW priority: 10 XP
+     - MEDIUM priority: 25 XP
+     - HIGH priority: 50 XP
+     - CRITICAL priority: 100 XP
+   - Complex tasks earn bonus XP!
+
+2. **Leveling Up**
+   - XP accumulates to increase your level
+   - Higher levels = cooler cursor glow colors
+   - Show off your expertise!
+
+3. **Leaderboard**
+   - Check the sidebar to see top performers
+   - "Sprint Champion" shows weekly leaders
+   - Compete with your team!
+
+4. **Your Stats**
+   - View your current XP and level in the sidebar
+   - Track your progress over time
+
+🏆 **Goal:** Become the Sprint Champion by completing the most high-priority tasks!"""
+
+    # Teams flow
+    elif "team" in question:
+        return """## 👥 How to Use Teams
+
+**Organize your users into groups!**
+
+**Step-by-step guide:**
+
+1. **Create a Team**
+   - Go to the dashboard sidebar
+   - Click "Create Team"
+   - Enter team name and description
+
+2. **Assign Tasks to Teams**
+   - When creating/editing a task
+   - Select a team from the dropdown
+   - All team members can see the task
+
+3. **Filter by Team**
+   - Use the team filter in the dashboard
+   - See only tasks for specific teams
+
+4. **Team Management**
+   - View all teams in the sidebar
+   - Delete teams you no longer need
+
+💡 **Tip:** Use teams to separate work by department, feature squad, or project group."""
+
+    # Labels flow
+    elif "label" in question or "tag" in question:
+        return """## 🏷️ How to Use Labels
+
+**Color-code and categorize your tasks!**
+
+**Step-by-step guide:**
+
+1. **Create a Label**
+   - Go to Dashboard → "Create Label"
+   - Enter a name (e.g., "Bug", "Feature", "Urgent")
+   - Pick a color
+
+2. **Add Labels to Tasks**
+   - When creating/editing a task
+   - Select one or more labels
+   - Labels appear on the task card
+
+3. **Filter by Label**
+   - Click on a label to filter tasks
+   - See only tasks with that label
+
+4. **Popular Label Ideas**
+   - 🐛 Bug - for issues to fix
+   - ✨ Feature - for new functionality
+   - 📚 Documentation - for docs work
+   - 🔥 Urgent - for high priority items
+
+💡 **Tip:** Keep labels consistent across the team for better organization!"""
+
+    # Sprint flow
+    elif "sprint" in question or "planning" in question or "velocity" in question:
+        return """## 🏃 Sprint Planning
+
+**Plan your team's work for the next sprint!**
+*(PM/PO roles only)*
+
+**Step-by-step guide:**
+
+1. **Access Sprint Planning**
+   - Go to Analytics → Sprint Planning
+   - Only visible for Project Managers and Product Owners
+
+2. **View AI Recommendations**
+   - See suggested task assignments
+   - Based on developer workload and skills
+   - Estimated completion probability
+
+3. **Review Sprint Capacity**
+   - See team velocity (tasks/day)
+   - Check if sprint is overloaded
+   - Adjust assignments as needed
+
+4. **Apply Assignments**
+   - Accept AI suggestions with one click
+   - Or manually reassign tasks
+   - Balance workload across team
+
+5. **Track Sprint Progress**
+   - Monitor completion rate during sprint
+   - Get alerts for at-risk tasks
+
+💡 **Tip:** Keep sprints to 2 weeks for best results!"""
+
+    # Export flow
+    elif "export" in question or "excel" in question or "download" in question:
+        return """## 📥 How to Export Tasks
+
+**Download your tasks as an Excel file!**
+
+**Step-by-step guide:**
+
+1. **Go to Dashboard**
+   - Make sure you're logged in
+
+2. **Click Export Button**
+   - Find the "Export to Excel" button in the toolbar
+   - A download will start automatically
+
+3. **Open the File**
+   - Find `tasks.xlsx` in your Downloads folder
+   - Open with Excel, Google Sheets, or similar
+
+4. **What's Included**
+   - Task ID, Title, Description
+   - Priority, Status
+   - Estimated vs Spent Days
+   - Creator and Assignee names
+
+💡 **Tip:** Use exports for stakeholder reports or offline backup!"""
+
+    # Calendar flow
+    elif "calendar" in question or "due" in question or "deadline" in question or "schedule" in question:
+        return """## 📅 Calendar View
+
+**See your tasks on a calendar!**
+
+**Step-by-step guide:**
+
+1. **Access Calendar**
+   - Click "Calendar" in the sidebar
+   - View tasks by due date
+
+2. **Navigate Dates**
+   - Use arrows to move between months
+   - Click a date to see tasks due that day
+
+3. **View Task Details**
+   - Click on a task in the calendar
+   - Opens the task detail view
+
+4. **Color Coding**
+   - Tasks are colored by priority
+   - RED = Critical/High
+   - YELLOW = Medium
+   - GREEN = Low
+
+💡 **Tip:** Use the calendar to plan your week and avoid missing deadlines!"""
+
+    # AI features flow
+    elif "ai" in question or "smart" in question or "suggest" in question or "auto" in question:
+        return """## 🤖 AI Features
+
+**TaskFlow uses AI to help you work smarter!**
+
+**Available AI Features:**
+
+1. **Auto Priority Detection**
+   - When you create a task without priority
+   - AI analyzes the description
+   - Automatically suggests LOW/MEDIUM/HIGH/CRITICAL
+
+2. **Smart Dependency Suggestions**
+   - AI finds related tasks
+   - Suggests which tasks should be linked
+   - Prevents circular dependencies
+
+3. **Sprint Planning AI** (PM/PO only)
+   - Recommends optimal task assignments
    - Predicts sprint completion probability
-   - Detects team health issues
-   - Suggests workload balancing
+   - Balances team workload
 
-**Key files:** `kpi_service.py`, `ai_insights.py`, `Analytics.jsx`"""
+4. **AI Insights Dashboard** (PM/PO only)
+   - Team health analysis
+   - Productivity predictions
+   - Risk detection
 
-    # Default: code-focused explanation
+5. **This Chat Assistant!**
+   - Ask me anything about how to use TaskFlow
+   - Get step-by-step guidance
+
+💡 **Tip:** Let AI handle repetitive decisions so you can focus on the work!"""
+
+    # Status/workflow flow
+    elif "status" in question or "workflow" in question or "todo" in question or "progress" in question or "done" in question:
+        return """## 📋 Task Status & Workflow
+
+**Understanding task statuses:**
+
+**The Three Statuses:**
+
+1. **TODO** 📝
+   - Task is created but not started
+   - Waiting to be picked up
+   - Default status for new tasks
+
+2. **IN_PROGRESS** 🔄
+   - Someone is actively working on it
+   - Drag from TODO to start working
+   - Shows the task is underway
+
+3. **DONE** ✅
+   - Task is completed!
+   - Drag here when finished
+   - Earns XP for the assignee
+
+**How to Update Status:**
+- **Kanban Board**: Drag and drop between columns
+- **Task Detail**: Use the status dropdown
+- **Quick tip**: Moving to DONE = XP earned!
+
+💡 **Workflow Tip:** Keep IN_PROGRESS limited - focus on finishing before starting new tasks!"""
+
+    # Default: general help
     else:
-        return f"""## 🔍 Code Search Results
+        # Provide a helpful general response
+        return f"""## 💡 Help with TaskFlow
 
-Based on your question about **"{question}"**:
+I can help you with:
 
-**Primary match:** `{top_result['name']}` in `{top_result['file']}`
-- Location: lines {top_result['lines']}
-- Type: {top_result['type']}
+**📋 Tasks**
+- "How do I create a task?" - Learn to add new tasks
+- "How do I add comments?" - Discuss tasks with your team
+- "What are task statuses?" - TODO, IN_PROGRESS, DONE
 
-{f"> {top_result['docstring']}" if top_result.get('docstring') else ""}
+**📊 Views**
+- "How does the Kanban board work?" - Drag & drop tasks
+- "How does the calendar work?" - View tasks by date
 
-**How to explore further:**
-1. Open `{top_result['file']}` and go to line {top_result['lines'].split('-')[0][1:]}
-2. Read the function/class docstring for purpose
-3. Trace the callers to understand the flow
+**📁 Organization**
+- "How do projects work?" - Organize tasks by project
+- "How do dependencies work?" - Link related tasks
+- "How do labels work?" - Tag and categorize
+- "How do teams work?" - Group users together
 
-**Related code in:** {', '.join(f"`{r['file']}`" for r in all_results[1:4])}"""
+**🎮 Gamification**
+- "How does XP work?" - Earn points for completing tasks
+- "What is the leaderboard?" - Compete with teammates
+
+**🤖 AI Features**
+- "What AI features are available?" - Smart automation
+- "How does sprint planning work?" - AI-powered planning
+
+**👤 Account**
+- "How do I register?" - Create your account
+- "How do I login?" - Access your dashboard
+- "How do I export tasks?" - Download as Excel
+
+Try asking one of these questions for detailed guidance!
+
+---
+*Your question: "{question}"*
+*Try using keywords like: task, project, kanban, calendar, xp, team, label, sprint, export*"""
 
 
 def get_index_status() -> Dict[str, Any]:
