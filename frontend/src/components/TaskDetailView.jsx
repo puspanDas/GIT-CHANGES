@@ -6,7 +6,10 @@ import {
 } from 'lucide-react';
 import AIAssistantPanel from './AIAssistantPanel';
 
-const TaskDetailView = ({ task, onClose, onUpdate, users, comments, onAddComment, currentUser }) => {
+const TaskDetailView = ({
+    task, onClose, onUpdate, users, comments, onAddComment, currentUser,
+    tasks = [], labels = [], teams = [], onCreateLabel, onCreateTeam
+}) => {
     const [activeTab, setActiveTab] = useState("comments");
     const [newComment, setNewComment] = useState("");
     const [isDescriptionEditing, setIsDescriptionEditing] = useState(false);
@@ -14,9 +17,76 @@ const TaskDetailView = ({ task, onClose, onUpdate, users, comments, onAddComment
     const [aiPanelOpen, setAiPanelOpen] = useState(false);
     const editorRef = React.useRef(null);
 
+    // States for dropdowns
+    const [showParentDropdown, setShowParentDropdown] = useState(false);
+    const [showLabelsDropdown, setShowLabelsDropdown] = useState(false);
+    const [showTeamDropdown, setShowTeamDropdown] = useState(false);
+    const [showNewLabelForm, setShowNewLabelForm] = useState(false);
+    const [showNewTeamForm, setShowNewTeamForm] = useState(false);
+    const [newLabelName, setNewLabelName] = useState("");
+    const [newLabelColor, setNewLabelColor] = useState("#3B82F6");
+    const [newTeamName, setNewTeamName] = useState("");
+
     const handleSaveDescription = () => {
         onUpdate({ ...task, description });
         setIsDescriptionEditing(false);
+    };
+
+    // Get parent task name
+    const getParentTask = () => tasks.find(t => t.id === task.parent_id);
+
+    // Get available tasks for parent selection (exclude self and children)
+    const getAvailableParentTasks = () => {
+        return tasks.filter(t => t.id !== task.id && t.parent_id !== task.id);
+    };
+
+    // Get labels for this task
+    const getTaskLabels = () => {
+        const taskLabelIds = task.labels || [];
+        return labels.filter(l => taskLabelIds.includes(l.id));
+    };
+
+    // Get team for this task
+    const getTaskTeam = () => teams.find(t => t.id === task.team_id);
+
+    // Handle parent change
+    const handleParentChange = (parentId) => {
+        onUpdate({ ...task, parent_id: parentId ? parseInt(parentId) : null });
+        setShowParentDropdown(false);
+    };
+
+    // Handle label toggle
+    const handleLabelToggle = (labelId) => {
+        const currentLabels = task.labels || [];
+        const newLabels = currentLabels.includes(labelId)
+            ? currentLabels.filter(id => id !== labelId)
+            : [...currentLabels, labelId];
+        onUpdate({ ...task, labels: newLabels });
+    };
+
+    // Handle team change
+    const handleTeamChange = (teamId) => {
+        onUpdate({ ...task, team_id: teamId ? parseInt(teamId) : null });
+        setShowTeamDropdown(false);
+    };
+
+    // Handle create new label
+    const handleCreateLabel = () => {
+        if (newLabelName.trim() && onCreateLabel) {
+            onCreateLabel(newLabelName.trim(), newLabelColor);
+            setNewLabelName("");
+            setNewLabelColor("#3B82F6");
+            setShowNewLabelForm(false);
+        }
+    };
+
+    // Handle create new team
+    const handleCreateTeam = () => {
+        if (newTeamName.trim() && onCreateTeam) {
+            onCreateTeam(newTeamName.trim());
+            setNewTeamName("");
+            setShowNewTeamForm(false);
+        }
     };
 
     const priorityColors = {
@@ -305,10 +375,42 @@ const TaskDetailView = ({ task, onClose, onUpdate, users, comments, onAddComment
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-3 gap-2 items-center">
+                                    {/* Parent Task */}
+                                    <div className="grid grid-cols-3 gap-2 items-center relative">
                                         <span className="text-sm text-gray-500">Parent</span>
-                                        <div className="col-span-2 text-sm text-gray-400 hover:text-gray-600 cursor-pointer">
-                                            Add parent
+                                        <div className="col-span-2">
+                                            <div
+                                                onClick={() => setShowParentDropdown(!showParentDropdown)}
+                                                className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
+                                            >
+                                                {getParentTask() ? (
+                                                    <span className="text-sm text-blue-600 hover:underline">
+                                                        KAN-{getParentTask().id} {getParentTask().title}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-sm text-gray-400">Add parent</span>
+                                                )}
+                                                <ChevronDown className="w-3 h-3 text-gray-400" />
+                                            </div>
+                                            {showParentDropdown && (
+                                                <div className="absolute right-0 mt-1 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-20 max-h-48 overflow-y-auto">
+                                                    <div
+                                                        onClick={() => handleParentChange(null)}
+                                                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm text-gray-500"
+                                                    >
+                                                        None (Remove parent)
+                                                    </div>
+                                                    {getAvailableParentTasks().map(t => (
+                                                        <div
+                                                            key={t.id}
+                                                            onClick={() => handleParentChange(t.id)}
+                                                            className={`px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm ${task.parent_id === t.id ? 'bg-blue-50 text-blue-600' : 'text-gray-700'}`}
+                                                        >
+                                                            KAN-{t.id} {t.title}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
@@ -320,17 +422,172 @@ const TaskDetailView = ({ task, onClose, onUpdate, users, comments, onAddComment
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-3 gap-2 items-center">
-                                        <span className="text-sm text-gray-500">Labels</span>
-                                        <div className="col-span-2 text-sm text-gray-400 hover:text-gray-600 cursor-pointer">
-                                            Add labels
+                                    {/* Labels */}
+                                    <div className="grid grid-cols-3 gap-2 items-start relative">
+                                        <span className="text-sm text-gray-500 pt-1">Labels</span>
+                                        <div className="col-span-2">
+                                            <div
+                                                onClick={() => setShowLabelsDropdown(!showLabelsDropdown)}
+                                                className="flex flex-wrap items-center gap-1 p-1 hover:bg-gray-100 rounded cursor-pointer min-h-[28px]"
+                                            >
+                                                {getTaskLabels().length > 0 ? (
+                                                    getTaskLabels().map(label => (
+                                                        <span
+                                                            key={label.id}
+                                                            className="px-2 py-0.5 rounded text-xs font-medium text-white"
+                                                            style={{ backgroundColor: label.color }}
+                                                        >
+                                                            {label.name}
+                                                        </span>
+                                                    ))
+                                                ) : (
+                                                    <span className="text-sm text-gray-400">Add labels</span>
+                                                )}
+                                                <ChevronDown className="w-3 h-3 text-gray-400 ml-auto" />
+                                            </div>
+                                            {showLabelsDropdown && (
+                                                <div className="absolute right-0 mt-1 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
+                                                    <div className="max-h-48 overflow-y-auto">
+                                                        {labels.map(label => (
+                                                            <div
+                                                                key={label.id}
+                                                                onClick={() => handleLabelToggle(label.id)}
+                                                                className={`px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm flex items-center justify-between ${(task.labels || []).includes(label.id) ? 'bg-blue-50' : ''}`}
+                                                            >
+                                                                <div className="flex items-center space-x-2">
+                                                                    <span
+                                                                        className="w-3 h-3 rounded-full"
+                                                                        style={{ backgroundColor: label.color }}
+                                                                    />
+                                                                    <span>{label.name}</span>
+                                                                </div>
+                                                                {(task.labels || []).includes(label.id) && (
+                                                                    <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <div className="border-t border-gray-200 p-2">
+                                                        {showNewLabelForm ? (
+                                                            <div className="space-y-2">
+                                                                <input
+                                                                    type="text"
+                                                                    value={newLabelName}
+                                                                    onChange={(e) => setNewLabelName(e.target.value)}
+                                                                    placeholder="Label name"
+                                                                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                                                                    autoFocus
+                                                                />
+                                                                <div className="flex items-center space-x-2">
+                                                                    <input
+                                                                        type="color"
+                                                                        value={newLabelColor}
+                                                                        onChange={(e) => setNewLabelColor(e.target.value)}
+                                                                        className="w-8 h-8 rounded cursor-pointer"
+                                                                    />
+                                                                    <button
+                                                                        onClick={handleCreateLabel}
+                                                                        className="flex-1 px-2 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                                                                    >
+                                                                        Create
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => setShowNewLabelForm(false)}
+                                                                        className="px-2 py-1 text-gray-600 text-sm hover:bg-gray-100 rounded"
+                                                                    >
+                                                                        Cancel
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <button
+                                                                onClick={() => setShowNewLabelForm(true)}
+                                                                className="w-full text-left px-2 py-1 text-sm text-blue-600 hover:bg-gray-100 rounded flex items-center"
+                                                            >
+                                                                <Plus className="w-4 h-4 mr-1" /> Create new label
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-3 gap-2 items-center">
+                                    {/* Team */}
+                                    <div className="grid grid-cols-3 gap-2 items-center relative">
                                         <span className="text-sm text-gray-500">Team</span>
-                                        <div className="col-span-2 text-sm text-gray-400 hover:text-gray-600 cursor-pointer">
-                                            Add team
+                                        <div className="col-span-2">
+                                            <div
+                                                onClick={() => setShowTeamDropdown(!showTeamDropdown)}
+                                                className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
+                                            >
+                                                {getTaskTeam() ? (
+                                                    <span className="text-sm text-blue-600">
+                                                        <Users className="w-4 h-4 inline mr-1" />
+                                                        {getTaskTeam().name}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-sm text-gray-400">Add team</span>
+                                                )}
+                                                <ChevronDown className="w-3 h-3 text-gray-400" />
+                                            </div>
+                                            {showTeamDropdown && (
+                                                <div className="absolute right-0 mt-1 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
+                                                    <div className="max-h-48 overflow-y-auto">
+                                                        <div
+                                                            onClick={() => handleTeamChange(null)}
+                                                            className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm text-gray-500"
+                                                        >
+                                                            None (Remove team)
+                                                        </div>
+                                                        {teams.map(team => (
+                                                            <div
+                                                                key={team.id}
+                                                                onClick={() => handleTeamChange(team.id)}
+                                                                className={`px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm ${task.team_id === team.id ? 'bg-blue-50 text-blue-600' : 'text-gray-700'}`}
+                                                            >
+                                                                <Users className="w-4 h-4 inline mr-2" />
+                                                                {team.name}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <div className="border-t border-gray-200 p-2">
+                                                        {showNewTeamForm ? (
+                                                            <div className="space-y-2">
+                                                                <input
+                                                                    type="text"
+                                                                    value={newTeamName}
+                                                                    onChange={(e) => setNewTeamName(e.target.value)}
+                                                                    placeholder="Team name"
+                                                                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                                                                    autoFocus
+                                                                />
+                                                                <div className="flex space-x-2">
+                                                                    <button
+                                                                        onClick={handleCreateTeam}
+                                                                        className="flex-1 px-2 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                                                                    >
+                                                                        Create
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => setShowNewTeamForm(false)}
+                                                                        className="px-2 py-1 text-gray-600 text-sm hover:bg-gray-100 rounded"
+                                                                    >
+                                                                        Cancel
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <button
+                                                                onClick={() => setShowNewTeamForm(true)}
+                                                                className="w-full text-left px-2 py-1 text-sm text-blue-600 hover:bg-gray-100 rounded flex items-center"
+                                                            >
+                                                                <Plus className="w-4 h-4 mr-1" /> Create new team
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 

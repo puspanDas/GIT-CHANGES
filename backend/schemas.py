@@ -68,6 +68,9 @@ class TaskBase(BaseModel):
     spent_days: float = 0.0
     project_id: Optional[int] = None
     dependencies: Optional[List[int]] = []  # List of task IDs this task depends on
+    parent_id: Optional[int] = None  # Parent task ID for subtask hierarchy
+    labels: Optional[List[int]] = []  # List of label IDs
+    team_id: Optional[int] = None  # Team assignment
 
 class TaskCreate(TaskBase):
     assignee_id: Optional[int] = None
@@ -82,6 +85,9 @@ class TaskUpdate(BaseModel):
     spent_days: Optional[float] = None
     project_id: Optional[int] = None
     dependencies: Optional[List[int]] = None  # Update dependencies
+    parent_id: Optional[int] = None  # Update parent task
+    labels: Optional[List[int]] = None  # Update labels
+    team_id: Optional[int] = None  # Update team
 
 class Task(TaskBase):
     id: int
@@ -89,6 +95,9 @@ class Task(TaskBase):
     creator_id: int
     assignee_id: Optional[int] = None
     dependencies: Optional[List[int]] = []  # List of dependency task IDs
+    parent_id: Optional[int] = None
+    labels: Optional[List[int]] = []
+    team_id: Optional[int] = None
     
     class Config:
         orm_mode = True
@@ -124,3 +133,32 @@ class Comment(CommentBase):
 class CodebaseQuery(BaseModel):
     question: str
 
+# Label Schemas
+class LabelBase(BaseModel):
+    name: str
+    color: str  # Hex color like "#FF5733"
+
+class LabelCreate(LabelBase):
+    pass
+
+class Label(LabelBase):
+    id: int
+    
+    class Config:
+        orm_mode = True
+
+# Team Schemas
+class TeamBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+class TeamCreate(TeamBase):
+    pass
+
+class Team(TeamBase):
+    id: int
+    created_at: datetime
+    creator_id: int
+    
+    class Config:
+        orm_mode = True

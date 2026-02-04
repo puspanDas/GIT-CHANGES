@@ -95,7 +95,10 @@ def create_task(task: schemas.TaskCreate, current_user: dict = Depends(auth.get_
         estimated_days=task.estimated_days,
         spent_days=task.spent_days,
         project_id=task.project_id,
-        dependencies=task.dependencies or []
+        dependencies=task.dependencies or [],
+        parent_id=task.parent_id,
+        labels=task.labels or [],
+        team_id=task.team_id
     )
     return db_task
 
@@ -477,3 +480,52 @@ def chat_with_codebase(query: schemas.CodebaseQuery, current_user: dict = Depend
         raise HTTPException(status_code=400, detail="Question must be at least 3 characters")
     return codebase_rag_service.query_codebase(query.question)
 
+# Labels Management Endpoints
+@app.get("/labels/", response_model=List[schemas.Label])
+def get_labels(current_user: dict = Depends(auth.get_current_user_json)):
+    """Get all labels"""
+    return json_storage.get_all_labels()
+
+@app.post("/labels/", response_model=schemas.Label)
+def create_label(label: schemas.LabelCreate, current_user: dict = Depends(auth.get_current_user_json)):
+    """Create a new label"""
+    if not label.name or not label.name.strip():
+        raise HTTPException(status_code=400, detail="Label name is required")
+    return json_storage.create_label(label.name.strip(), label.color)
+
+@app.delete("/labels/{label_id}")
+def delete_label(label_id: int, current_user: dict = Depends(auth.get_current_user_json)):
+    """Delete a label"""
+    success = json_storage.delete_label(label_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Label not found")
+    return {"message": "Label deleted successfully"}
+
+# Teams Management Endpoints
+@app.get("/teams/", response_model=List[schemas.Team])
+def get_teams(current_user: dict = Depends(auth.get_current_user_json)):
+    """Get all teams"""
+    return json_storage.get_all_teams()
+
+@app.post("/teams/", response_model=schemas.Team)
+def create_team(team: schemas.TeamCreate, current_user: dict = Depends(auth.get_current_user_json)):
+    """Create a new team"""
+    if not team.name or not team.name.strip():
+        raise HTTPException(status_code=400, detail="Team name is required")
+    return json_storage.create_team(team.name.strip(), team.description or "", current_user["id"])
+
+@app.get("/teams/{team_id}", response_model=schemas.Team)
+def get_team(team_id: int, current_user: dict = Depends(auth.get_current_user_json)):
+    """Get a specific team"""
+    team = json_storage.get_team_by_id(team_id)
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    return team
+
+@app.delete("/teams/{team_id}")
+def delete_team(team_id: int, current_user: dict = Depends(auth.get_current_user_json)):
+    """Delete a team"""
+    success = json_storage.delete_team(team_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Team not found")
+    return {"message": "Team deleted successfully"}

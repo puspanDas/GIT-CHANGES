@@ -35,10 +35,14 @@ DATA_DEFAULTS = {
     "tasks": [],
     "comments": [],
     "projects": [],
+    "labels": [],
+    "teams": [],
     "next_user_id": 1,
     "next_task_id": 1,
     "next_comment_id": 1,
-    "next_project_id": 1
+    "next_project_id": 1,
+    "next_label_id": 1,
+    "next_team_id": 1
 }
 
 USER_DEFAULTS = {"xp": 0, "level": 1, "total_tasks_completed": 0}
@@ -232,7 +236,10 @@ def create_task(
     estimated_days: float = 0.0, 
     spent_days: float = 0.0, 
     project_id: Optional[int] = None, 
-    dependencies: Optional[List[int]] = None
+    dependencies: Optional[List[int]] = None,
+    parent_id: Optional[int] = None,
+    labels: Optional[List[int]] = None,
+    team_id: Optional[int] = None
 ) -> Dict:
     """Create a new task"""
     data = load_data()
@@ -249,6 +256,9 @@ def create_task(
         "spent_days": spent_days,
         "project_id": project_id,
         "dependencies": dependencies or [],
+        "parent_id": parent_id,
+        "labels": labels or [],
+        "team_id": team_id,
         "created_at": datetime.utcnow().isoformat()
     }
     data["tasks"].append(task)
@@ -319,3 +329,107 @@ def get_comments_by_task(task_id: int) -> List[Dict]:
     
     # Sort by created_at descending (newest first)
     return sorted(task_comments, key=lambda x: x.get("created_at", ""), reverse=True)
+
+
+# ==================== LABELS ====================
+
+def get_all_labels() -> List[Dict]:
+    """Get all labels"""
+    return load_data().get("labels", [])
+
+
+def get_label_by_id(label_id: int) -> Optional[Dict]:
+    """Get label by ID"""
+    data = load_data()
+    labels = data.get("labels", [])
+    label_index = {l["id"]: l for l in labels}
+    return label_index.get(label_id)
+
+
+def create_label(name: str, color: str) -> Dict:
+    """Create a new label"""
+    data = load_data()
+    
+    label = {
+        "id": data.get("next_label_id", 1),
+        "name": name,
+        "color": color
+    }
+    
+    if "labels" not in data:
+        data["labels"] = []
+    
+    data["labels"].append(label)
+    data["next_label_id"] = data.get("next_label_id", 1) + 1
+    save_data(data)
+    return label
+
+
+def delete_label(label_id: int) -> bool:
+    """Delete a label by ID"""
+    data = load_data()
+    labels = data.get("labels", [])
+    
+    for i, label in enumerate(labels):
+        if label["id"] == label_id:
+            data["labels"].pop(i)
+            # Remove this label from all tasks
+            for task in data.get("tasks", []):
+                if "labels" in task and label_id in task["labels"]:
+                    task["labels"].remove(label_id)
+            save_data(data)
+            return True
+    return False
+
+
+# ==================== TEAMS ====================
+
+def get_all_teams() -> List[Dict]:
+    """Get all teams"""
+    return load_data().get("teams", [])
+
+
+def get_team_by_id(team_id: int) -> Optional[Dict]:
+    """Get team by ID"""
+    data = load_data()
+    teams = data.get("teams", [])
+    team_index = {t["id"]: t for t in teams}
+    return team_index.get(team_id)
+
+
+def create_team(name: str, description: str, creator_id: int) -> Dict:
+    """Create a new team"""
+    data = load_data()
+    
+    team = {
+        "id": data.get("next_team_id", 1),
+        "name": name,
+        "description": description,
+        "creator_id": creator_id,
+        "created_at": datetime.utcnow().isoformat()
+    }
+    
+    if "teams" not in data:
+        data["teams"] = []
+    
+    data["teams"].append(team)
+    data["next_team_id"] = data.get("next_team_id", 1) + 1
+    save_data(data)
+    return team
+
+
+def delete_team(team_id: int) -> bool:
+    """Delete a team by ID"""
+    data = load_data()
+    teams = data.get("teams", [])
+    
+    for i, team in enumerate(teams):
+        if team["id"] == team_id:
+            data["teams"].pop(i)
+            # Remove team assignment from all tasks
+            for task in data.get("tasks", []):
+                if task.get("team_id") == team_id:
+                    task["team_id"] = None
+            save_data(data)
+            return True
+    return False

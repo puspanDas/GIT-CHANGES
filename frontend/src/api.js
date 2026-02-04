@@ -231,4 +231,36 @@ export const chatWithCodebase = async (question) => {
     return response.data;
 };
 
+// Labels API
+export const getLabels = async () => {
+    const response = await api.get('/labels/');
+    return response.data;
+};
+
+export const createLabel = async (name, color) => {
+    const response = await api.post('/labels/', { name, color });
+    return response.data;
+};
+
+export const deleteLabel = async (labelId) => {
+    const response = await api.delete(`/labels/${labelId}`);
+    return response.data;
+};
+
+// Teams API
+export const getTeams = async () => {
+    const response = await api.get('/teams/');
+    return response.data;
+};
+
+export const createTeam = async (name, description = '') => {
+    const response = await api.post('/teams/', { name, description });
+    return response.data;
+};
+
+export const deleteTeam = async (teamId) => {
+    const response = await api.delete(`/teams/${teamId}`);
+    return response.data;
+};
+
 export default api;

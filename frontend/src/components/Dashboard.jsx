@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getTasks, createTask, getUsers, updateTask, getCurrentUser, getComments, addComment, uploadFile, getProjects, createProject } from '../api';
+import { getTasks, createTask, getUsers, updateTask, getCurrentUser, getComments, addComment, uploadFile, getProjects, createProject, getLabels, createLabel as createLabelApi, getTeams, createTeam as createTeamApi } from '../api';
 import KanbanBoard from './KanbanBoard';
 import ListView from './ListView';
 import CalendarView from './CalendarView';
@@ -68,6 +68,10 @@ const Dashboard = ({ onLogout }) => {
     const [newProject, setNewProject] = useState({ name: '', description: '' });
     const [showSprintPlanner, setShowSprintPlanner] = useState(false);
 
+    // Labels and Teams State
+    const [labels, setLabels] = useState([]);
+    const [teams, setTeams] = useState([]);
+
     // Filter State
     const [showAssigneeFilter, setShowAssigneeFilter] = useState(false);
     const [showTypeFilter, setShowTypeFilter] = useState(false);
@@ -85,6 +89,8 @@ const Dashboard = ({ onLogout }) => {
         fetchCurrentUser();
         fetchUsers();
         fetchProjects();
+        fetchLabels();
+        fetchTeams();
     }, []);
 
     useEffect(() => {
@@ -126,6 +132,44 @@ const Dashboard = ({ onLogout }) => {
             }
         } catch (err) {
             console.error("Failed to fetch projects", err);
+        }
+    };
+
+    const fetchLabels = async () => {
+        try {
+            const data = await getLabels();
+            setLabels(data);
+        } catch (err) {
+            console.error("Failed to fetch labels", err);
+        }
+    };
+
+    const fetchTeams = async () => {
+        try {
+            const data = await getTeams();
+            setTeams(data);
+        } catch (err) {
+            console.error("Failed to fetch teams", err);
+        }
+    };
+
+    const handleCreateLabel = async (name, color) => {
+        try {
+            const newLabel = await createLabelApi(name, color);
+            setLabels([...labels, newLabel]);
+            return newLabel;
+        } catch (err) {
+            console.error("Failed to create label", err);
+        }
+    };
+
+    const handleCreateTeam = async (name) => {
+        try {
+            const newTeam = await createTeamApi(name, '');
+            setTeams([...teams, newTeam]);
+            return newTeam;
+        } catch (err) {
+            console.error("Failed to create team", err);
         }
     };
 
@@ -840,14 +884,17 @@ const Dashboard = ({ onLogout }) => {
                     onUpdate={(updatedTask) => {
                         // Optimistic update
                         setSelectedTask(updatedTask);
-                        // Call API to update
+                        // Call API to update (include new fields)
                         updateTask(updatedTask.id, {
                             title: updatedTask.title,
                             description: updatedTask.description,
                             estimated_days: updatedTask.estimated_days,
                             assignee_id: updatedTask.assignee_id,
                             status: updatedTask.status,
-                            priority: updatedTask.priority
+                            priority: updatedTask.priority,
+                            parent_id: updatedTask.parent_id,
+                            labels: updatedTask.labels,
+                            team_id: updatedTask.team_id
                         }).then(() => fetchTasks(selectedProject ? selectedProject.id : null));
                     }}
                     users={users}
@@ -861,6 +908,11 @@ const Dashboard = ({ onLogout }) => {
                         }
                     }}
                     currentUser={currentUser}
+                    tasks={tasks}
+                    labels={labels}
+                    teams={teams}
+                    onCreateLabel={handleCreateLabel}
+                    onCreateTeam={handleCreateTeam}
                 />
             )}
             {/* Create Project Modal */}
