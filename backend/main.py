@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, W
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-import schemas, auth, json_storage, ml_service, kpi_service, ai_insights, ai_assistant, dependency_service, collaboration_service, codebase_rag_service, gamification_service
+import schemas, auth, json_storage, ml_service, kpi_service, ai_insights, ai_assistant, dependency_service, collaboration_service, codebase_rag_service, gamification_service, email_service
 from fastapi.staticfiles import StaticFiles
 import os
 import shutil
@@ -41,13 +41,14 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    
     access_token_expires = auth.timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = auth.create_access_token(
         data={"sub": user["username"], "role": user["role"]}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.post("/users/", response_model=schemas.User)
+@app.post("/users/")
 def create_user(user: schemas.UserCreate):
     if json_storage.get_user_by_username(user.username):
         raise HTTPException(status_code=400, detail="Username already registered")
@@ -60,7 +61,70 @@ def create_user(user: schemas.UserCreate):
     if not db_user:
         raise HTTPException(status_code=500, detail="Failed to create user")
     
-    return db_user
+    # Auto-verify user and send welcome email
+    json_storage.verify_user_email(user.email)
+    email_sent = email_service.send_welcome_email(user.email, user.username)
+    
+    return {
+        "message": "Registration successful! Welcome to TaskFlow.",
+        "email_sent": email_sent,
+        "user": {
+            "id": db_user["id"],
+            "username": db_user["username"],
+            "email": db_user["email"],
+            "role": db_user["role"]
+        }
+    }
+
+
+@app.get("/verify/{token}")
+def verify_email(token: str):
+    """Verify user email with token"""
+    token_record = json_storage.get_verification_token(token)
+    
+    if not token_record:
+        raise HTTPException(
+            status_code=400, 
+            detail="Invalid or expired verification link. Please request a new one."
+        )
+    
+    # Verify the user
+    success = json_storage.verify_user_email(token_record["email"])
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to verify email")
+    
+    # Delete the token
+    json_storage.delete_verification_token(token)
+    
+    # Get user for welcome email
+    user = json_storage.get_user_by_email_for_verification(token_record["email"])
+    if user:
+        email_service.send_welcome_email(token_record["email"], user["username"])
+    
+    return {"message": "Email verified successfully! You can now log in."}
+
+
+@app.post("/resend-verification")
+def resend_verification(email: str):
+    """Resend verification email"""
+    user = json_storage.get_user_by_email_for_verification(email)
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="Email not found")
+    
+    if user.get("is_verified", False):
+        raise HTTPException(status_code=400, detail="Email already verified")
+    
+    # Generate new token and send email
+    token = email_service.generate_verification_token()
+    json_storage.create_verification_token(email, token)
+    
+    email_sent = email_service.send_verification_email(email, user["username"], token)
+    
+    if not email_sent:
+        raise HTTPException(status_code=500, detail="Failed to send verification email")
+    
+    return {"message": "Verification email sent. Please check your inbox."}
 
 @app.get("/users/me/", response_model=schemas.User)
 async def read_users_me(current_user: dict = Depends(auth.get_current_user_json)):

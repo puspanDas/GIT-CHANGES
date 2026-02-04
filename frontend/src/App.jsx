@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
+import VerifyEmail from './components/VerifyEmail';
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -28,6 +29,7 @@ function App() {
             <Routes>
                 <Route path="/login" element={!isAuthenticated ? <Login onLogin={handleLogin} /> : <Navigate to="/" />} />
                 <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/" />} />
+                <Route path="/verify/:token" element={<VerifyEmail />} />
                 <Route path="/" element={isAuthenticated ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" />} />
             </Routes>
         </Router>

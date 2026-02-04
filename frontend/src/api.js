@@ -27,6 +27,16 @@ export const register = async (username, email, password, role) => {
     return response.data;
 };
 
+export const verifyEmail = async (token) => {
+    const response = await api.get(`/verify/${token}`);
+    return response.data;
+};
+
+export const resendVerification = async (email) => {
+    const response = await api.post(`/resend-verification?email=${encodeURIComponent(email)}`);
+    return response.data;
+};
+
 export const getCurrentUser = async () => {
     const response = await api.get('/users/me/');
     return response.data;

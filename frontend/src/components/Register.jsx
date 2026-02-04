@@ -19,7 +19,8 @@ const Register = () => {
         setError('');
         try {
             await register(username, email, password, role);
-            navigate('/login');
+            // Redirect to login with success message
+            navigate('/login', { state: { message: 'Registration successful! Check your email for a welcome message.' } });
         } catch (err) {
             console.error("Registration error:", err);
             setError(err.response?.data?.detail || 'Registration failed. Please try again.');

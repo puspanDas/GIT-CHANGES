@@ -34,6 +34,7 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
+    is_verified: bool = False
     # Gamification fields
     xp: int = 0
     level: int = 1
@@ -41,6 +42,12 @@ class User(UserBase):
     
     class Config:
         orm_mode = True
+
+class EmailVerification(BaseModel):
+    email: EmailStr
+    token: str
+    created_at: datetime
+    expires_at: datetime
 
 # Project Schemas
 class ProjectBase(BaseModel):

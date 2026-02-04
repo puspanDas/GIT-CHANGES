@@ -37,6 +37,7 @@ DATA_DEFAULTS = {
     "projects": [],
     "labels": [],
     "teams": [],
+    "verification_tokens": [],
     "next_user_id": 1,
     "next_task_id": 1,
     "next_comment_id": 1,
@@ -45,7 +46,7 @@ DATA_DEFAULTS = {
     "next_team_id": 1
 }
 
-USER_DEFAULTS = {"xp": 0, "level": 1, "total_tasks_completed": 0}
+USER_DEFAULTS = {"xp": 0, "level": 1, "total_tasks_completed": 0, "is_verified": False}
 
 # ==================== CACHING ====================
 # In-memory cache to avoid repeated file reads
@@ -433,3 +434,82 @@ def delete_team(team_id: int) -> bool:
             save_data(data)
             return True
     return False
+
+
+# ==================== VERIFICATION TOKENS ====================
+def create_verification_token(email: str, token: str, expires_hours: int = 24) -> Dict:
+    """Create a verification token for email confirmation"""
+    from datetime import timedelta
+    data = load_data()
+    
+    # Remove any existing tokens for this email
+    if "verification_tokens" not in data:
+        data["verification_tokens"] = []
+    data["verification_tokens"] = [t for t in data["verification_tokens"] if t["email"] != email]
+    
+    token_record = {
+        "email": email,
+        "token": token,
+        "created_at": datetime.utcnow().isoformat(),
+        "expires_at": (datetime.utcnow() + timedelta(hours=expires_hours)).isoformat()
+    }
+    
+    data["verification_tokens"].append(token_record)
+    save_data(data)
+    return token_record
+
+
+def get_verification_token(token: str) -> Optional[Dict]:
+    """Get verification token record"""
+    data = load_data()
+    tokens = data.get("verification_tokens", [])
+    
+    for t in tokens:
+        if t["token"] == token:
+            # Check if expired
+            expires_at = datetime.fromisoformat(t["expires_at"])
+            if datetime.utcnow() < expires_at:
+                return t
+            else:
+                # Token expired, remove it
+                delete_verification_token(token)
+                return None
+    return None
+
+
+def delete_verification_token(token: str) -> bool:
+    """Delete a verification token"""
+    data = load_data()
+    tokens = data.get("verification_tokens", [])
+    
+    for i, t in enumerate(tokens):
+        if t["token"] == token:
+            data["verification_tokens"].pop(i)
+            save_data(data)
+            return True
+    return False
+
+
+def verify_user_email(email: str) -> bool:
+    """Mark a user as verified"""
+    data = load_data()
+    users = data.get("users", [])
+    
+    for user in users:
+        if user["email"] == email:
+            user["is_verified"] = True
+            save_data(data)
+            return True
+    return False
+
+
+def get_user_by_email_for_verification(email: str) -> Optional[Dict]:
+    """Get user by email for resending verification"""
+    data = load_data()
+    users = data.get("users", [])
+    
+    for user in users:
+        if user["email"] == email:
+            return user
+    return None
+
