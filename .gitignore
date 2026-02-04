@@ -33,3 +33,7 @@ backend/codebase_index/
 
 # Test artifacts
 *.log
+
+# Utility scripts (not needed in repo)
+git_push.py
+migrate_users.py
