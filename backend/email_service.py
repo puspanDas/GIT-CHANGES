@@ -5,19 +5,20 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import secrets
+import os
 from datetime import datetime, timedelta
 
-# SMTP Configuration
+# SMTP Configuration - uses environment variables in production
 EMAIL_CONFIG = {
     'smtp_server': 'smtp.gmail.com',
     'smtp_port': 587,
-    'sender_email': 'puspakdas124@gmail.com',
-    'sender_password': 'gnsw asgw suvt jhqv',
+    'sender_email': os.getenv('SMTP_EMAIL', 'puspakdas124@gmail.com'),
+    'sender_password': os.getenv('SMTP_PASSWORD', 'gnsw asgw suvt jhqv'),
     'sender_name': 'TaskFlow Team'
 }
 
-# Frontend URL for verification links
-FRONTEND_URL = 'http://localhost:5173'
+# Frontend URL for verification links - uses environment variable in production
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
 
 
 def generate_verification_token() -> str:
