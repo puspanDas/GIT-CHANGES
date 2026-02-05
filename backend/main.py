@@ -10,9 +10,17 @@ import uuid
 
 app = FastAPI(title="AI Task Manager")
 
+# CORS configuration - allow frontend origins
+allowed_origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://task-manager-frontend-brown-xi.vercel.app",
+    os.getenv("FRONTEND_URL", "http://localhost:5173")
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
