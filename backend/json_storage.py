@@ -174,11 +174,12 @@ def create_user(username: str, email: str, hashed_password: str, role: str) -> O
     """Create a new user with gamification fields"""
     data = load_data()
     
-    # Use indexed check for existence - single pass to build both indexes
+    # Check username and email separately to avoid false positives
     users = data["users"]
-    existing = {u["username"] for u in users} | {u["email"] for u in users}
+    existing_usernames = {u["username"] for u in users}
+    existing_emails = {u["email"] for u in users}
     
-    if username in existing or email in existing:
+    if username in existing_usernames or email in existing_emails:
         return None
     
     user = {
