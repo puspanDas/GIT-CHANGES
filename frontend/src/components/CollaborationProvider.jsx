@@ -40,7 +40,11 @@ export const CollaborationProvider = ({ children }) => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const wsUrl = `ws://localhost:8000/ws/${clientIdRef.current}?token=${token}`;
+        // Use ngrok URL if available, otherwise localhost
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const wsProtocol = apiUrl.startsWith('https') ? 'wss' : 'ws';
+        const wsHost = apiUrl.replace(/^https?:\/\//, '');
+        const wsUrl = `${wsProtocol}://${wsHost}/ws/${clientIdRef.current}?token=${token}`;
 
         try {
             wsRef.current = new WebSocket(wsUrl);

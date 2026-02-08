@@ -283,7 +283,8 @@ const Dashboard = ({ onLogout }) => {
     const handleExportExcel = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8000/tasks/export/excel', {
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+            const response = await fetch(`${apiUrl}/tasks/export/excel`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

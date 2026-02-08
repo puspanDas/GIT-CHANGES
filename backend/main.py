@@ -11,16 +11,21 @@ import uuid
 app = FastAPI(title="AI Task Manager")
 
 # CORS configuration - allow frontend origins
+# In development with ngrok, allow all origins; in production, restrict to specific origins
+is_development = os.getenv("ENVIRONMENT", "development") == "development"
+
 allowed_origins = [
     "http://localhost:5173",
     "http://localhost:3000",
+    "http://192.168.1.6:5173",
     "https://task-manager-frontend-brown-xi.vercel.app",
     os.getenv("FRONTEND_URL", "http://localhost:5173")
 ]
 
+# For ngrok/development, add wildcard patterns
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=["*"] if is_development else allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

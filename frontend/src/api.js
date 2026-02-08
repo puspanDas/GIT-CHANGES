@@ -1,14 +1,14 @@
 import axios from 'axios';
 
-// Production: Use Render backend, Development: Use localhost
+// Production: Use Render backend, Development: Use localhost or ngrok URL from env
 const isProduction = window.location.hostname !== 'localhost';
-const API_URL = isProduction
-    ? 'https://git-changes.onrender.com'
-    : 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL
+    || (isProduction ? 'https://git-changes.onrender.com' : 'http://localhost:8000');
 
 const api = axios.create({
     baseURL: API_URL,
 });
+
 
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
