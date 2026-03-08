@@ -295,7 +295,7 @@ const Leaderboard = ({ compact = false }) => {
                                 {selectedUser.username.substring(0, 2).toUpperCase()}
                             </motion.div>
 
-                            <h3 className="text-xl font-bold text-white mb-1">{selectedUser.username}</h3>
+                            <h3 className="text-xl font-bold text-foreground mb-1">{selectedUser.username}</h3>
                             <div
                                 className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium mb-4"
                                 style={{

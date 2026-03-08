@@ -130,7 +130,7 @@ const SprintPlanner = ({ onClose }) => {
                         </button>
                         <button
                             onClick={onClose}
-                            className="text-muted hover:text-white transition-colors text-xl"
+                            className="text-muted hover:text-foreground transition-colors text-xl"
                         >
                             ×
                         </button>
@@ -243,7 +243,7 @@ const SprintPlanner = ({ onClose }) => {
                                             <div className="w-20 text-right">
                                                 <span className="text-sm text-muted">{dev.current_tasks}</span>
                                                 <span className="text-muted mx-1">→</span>
-                                                <span className="text-sm text-white font-medium">{dev.total_after_plan}</span>
+                                                <span className="text-sm text-foreground font-medium">{dev.total_after_plan}</span>
                                             </div>
                                         </div>
                                     ))}

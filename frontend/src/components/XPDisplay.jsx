@@ -73,7 +73,7 @@ const XPDisplay = ({ compact = false, onXPChange }) => {
                 <AnimatePresence>
                     {showXPGain && (
                         <motion.div
-                            className="absolute -top-8 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold text-sm shadow-lg z-50"
+                            className="absolute -top-8 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r  text-white font-bold text-sm shadow-lg z-50"
                             initial={{ opacity: 0, y: 20, scale: 0.5 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: -20 }}
@@ -227,7 +227,7 @@ const XPDisplay = ({ compact = false, onXPChange }) => {
             <AnimatePresence>
                 {showXPGain && (
                     <motion.div
-                        className="absolute -top-4 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-4 py-2 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold shadow-lg shadow-yellow-500/50 z-50"
+                        className="absolute -top-4 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-4 py-2 rounded-full bg-gradient-to-r  text-white font-bold shadow-lg shadow-yellow-500/50 z-50"
                         initial={{ opacity: 0, y: 20, scale: 0.5 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -30 }}
@@ -316,7 +316,7 @@ const XPDisplay = ({ compact = false, onXPChange }) => {
                     whileHover={{ scale: 1.05 }}
                 >
                     <Zap className="w-4 h-4 text-yellow-500" />
-                    <span className="text-white font-medium">{stats.xp.toLocaleString()}</span>
+                    <span className="text-foreground font-medium">{stats.xp.toLocaleString()}</span>
                     <span className="text-muted">XP</span>
                 </motion.div>
                 <motion.div
@@ -324,7 +324,7 @@ const XPDisplay = ({ compact = false, onXPChange }) => {
                     whileHover={{ scale: 1.05 }}
                 >
                     <Award className="w-4 h-4 text-indigo-400" />
-                    <span className="text-white font-medium">{stats.total_tasks_completed}</span>
+                    <span className="text-foreground font-medium">{stats.total_tasks_completed}</span>
                     <span className="text-muted">tasks</span>
                 </motion.div>
             </div>
