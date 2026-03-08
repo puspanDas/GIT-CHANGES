@@ -22,7 +22,7 @@ const KanbanBoard = ({ tasks, onTaskUpdate, onTaskClick }) => {
             case 'HIGH': return 'bg-warning/10 text-warning border-warning/20';
             case 'MEDIUM': return 'bg-primary/10 text-primary border-primary/20';
             case 'LOW': return 'bg-success/10 text-success border-success/20';
-            default: return 'bg-secondary/10 text-gray-400 border-secondary/20';
+            default: return 'bg-secondary/10 text-muted border-secondary/20';
         }
     };
 

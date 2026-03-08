@@ -490,7 +490,7 @@ const Dashboard = ({ onLogout }) => {
                                                 {projects.map(p => (
                                                     <div
                                                         key={p.id}
-                                                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm flex items-center justify-between ${selectedProject && selectedProject.id === p.id ? 'bg-primary/5 text-primary font-medium' : ''}`}
+                                                        className={`px-4 py-2 hover:bg-surface cursor-pointer text-sm flex items-center justify-between ${selectedProject && selectedProject.id === p.id ? 'bg-primary/5 text-primary font-medium' : ''}`}
                                                         onClick={() => {
                                                             setSelectedProject(p);
                                                             setShowProjectDropdown(false);
@@ -503,7 +503,7 @@ const Dashboard = ({ onLogout }) => {
                                             </div>
                                             <div className="border-t border-border mt-1 pt-1">
                                                 <button
-                                                    className="w-full text-left px-4 py-2 text-primary text-sm hover:bg-gray-100 flex items-center"
+                                                    className="w-full text-left px-4 py-2 text-primary text-sm hover:bg-surface flex items-center"
                                                     onClick={() => {
                                                         setShowCreateProjectModal(true);
                                                         setShowProjectDropdown(false);
@@ -541,7 +541,7 @@ const Dashboard = ({ onLogout }) => {
                             <button
                                 key={tab}
                                 onClick={() => setView(tab.toUpperCase())}
-                                className={`pb-2 text-sm font-medium border-b-2 transition-colors ${view === tab.toUpperCase() ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-foreground hover:border-gray-300'}`}
+                                className={`pb-2 text-sm font-medium border-b-2 transition-colors ${view === tab.toUpperCase() ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-foreground hover:border-border'}`}
                             >
                                 {tab === 'List' && <List className="w-4 h-4 inline-block mr-1.5 mb-0.5" />}
                                 {tab === 'Board' && <Layout className="w-4 h-4 inline-block mr-1.5 mb-0.5" />}
@@ -552,7 +552,7 @@ const Dashboard = ({ onLogout }) => {
                         {currentUser && (currentUser.role === 'PM' || currentUser.role === 'PO') && (
                             <button
                                 onClick={() => setView('ANALYTICS')}
-                                className={`pb-2 text-sm font-medium border-b-2 transition-colors ${view === 'ANALYTICS' ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-foreground hover:border-gray-300'}`}
+                                className={`pb-2 text-sm font-medium border-b-2 transition-colors ${view === 'ANALYTICS' ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-foreground hover:border-border'}`}
                             >
                                 <BarChart3 className="w-4 h-4 inline-block mr-1.5 mb-0.5" />
                                 Analytics
@@ -596,7 +596,7 @@ const Dashboard = ({ onLogout }) => {
                                         <div className="absolute top-full left-0 mt-1 w-56 bg-surface border border-border rounded shadow-lg z-50 py-2 max-h-64 overflow-y-auto">
                                             <div className="px-3 py-2 text-xs font-semibold text-muted uppercase border-b border-border">Select Assignees</div>
                                             {users.map(user => (
-                                                <label key={user.id} className="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer">
+                                                <label key={user.id} className="flex items-center px-3 py-2 hover:bg-surface cursor-pointer">
                                                     <input
                                                         type="checkbox"
                                                         checked={filters.assignees.includes(user.id)}
@@ -604,7 +604,7 @@ const Dashboard = ({ onLogout }) => {
                                                         className="w-4 h-4 text-primary rounded border-border focus:ring-primary"
                                                     />
                                                     <div className="ml-2 flex items-center space-x-2">
-                                                        <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-bold text-gray-600">
+                                                        <div className="w-6 h-6 rounded-full bg-surface flex items-center justify-center text-[10px] font-bold text-muted">
                                                             {user.username.substring(0, 2).toUpperCase()}
                                                         </div>
                                                         <span className="text-sm">{user.username}</span>
@@ -656,7 +656,7 @@ const Dashboard = ({ onLogout }) => {
                                         <div className="absolute top-full left-0 mt-1 w-56 bg-surface border border-border rounded shadow-lg z-50 py-2">
                                             <div className="px-3 py-2 text-xs font-semibold text-muted uppercase border-b border-border">Select Statuses</div>
                                             {['TODO', 'IN_PROGRESS', 'IN_REVIEW', 'DONE'].map(status => (
-                                                <label key={status} className="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer">
+                                                <label key={status} className="flex items-center px-3 py-2 hover:bg-surface cursor-pointer">
                                                     <input
                                                         type="checkbox"
                                                         checked={filters.statuses.includes(status)}
@@ -705,7 +705,7 @@ const Dashboard = ({ onLogout }) => {
                                         <div className="absolute top-full left-0 mt-1 w-56 bg-surface border border-border rounded shadow-lg z-50 py-2">
                                             <div className="px-3 py-2 text-xs font-semibold text-muted uppercase border-b border-border">Select Priorities</div>
                                             {['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'].map(priority => (
-                                                <label key={priority} className="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer">
+                                                <label key={priority} className="flex items-center px-3 py-2 hover:bg-surface cursor-pointer">
                                                     <input
                                                         type="checkbox"
                                                         checked={filters.priorities.includes(priority)}

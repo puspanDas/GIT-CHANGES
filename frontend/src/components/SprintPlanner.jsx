@@ -108,8 +108,8 @@ const SprintPlanner = ({ onClose }) => {
                             <Calendar className="w-5 h-5 text-indigo-400" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-semibold text-white">AI Sprint Planner</h2>
-                            <p className="text-sm text-gray-400">Optimize task assignments with AI</p>
+                            <h2 className="text-lg font-semibold text-foreground">AI Sprint Planner</h2>
+                            <p className="text-sm text-muted">Optimize task assignments with AI</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -126,11 +126,11 @@ const SprintPlanner = ({ onClose }) => {
                             onClick={fetchSprintPlan}
                             className="p-2 rounded-lg hover:bg-white/5 transition-colors"
                         >
-                            <RefreshCw className={`w-4 h-4 text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+                            <RefreshCw className={`w-4 h-4 text-muted ${loading ? 'animate-spin' : ''}`} />
                         </button>
                         <button
                             onClick={onClose}
-                            className="text-gray-400 hover:text-white transition-colors text-xl"
+                            className="text-muted hover:text-white transition-colors text-xl"
                         >
                             ×
                         </button>
@@ -143,7 +143,7 @@ const SprintPlanner = ({ onClose }) => {
                 {loading && (
                     <div className="flex items-center justify-center py-16">
                         <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
-                        <span className="ml-3 text-gray-400">Generating optimal sprint plan...</span>
+                        <span className="ml-3 text-muted">Generating optimal sprint plan...</span>
                     </div>
                 )}
 
@@ -168,14 +168,14 @@ const SprintPlanner = ({ onClose }) => {
                         {/* Summary Cards */}
                         <div className="grid grid-cols-4 gap-4">
                             <div className="glass-card p-4">
-                                <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+                                <div className="flex items-center gap-2 text-muted text-sm mb-1">
                                     <Target className="w-4 h-4" />
                                     Sprint Duration
                                 </div>
-                                <div className="text-2xl font-bold text-white">{sprintDays} days</div>
+                                <div className="text-2xl font-bold text-foreground">{sprintDays} days</div>
                             </div>
                             <div className="glass-card p-4">
-                                <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+                                <div className="flex items-center gap-2 text-muted text-sm mb-1">
                                     <Zap className="w-4 h-4" />
                                     Tasks to Assign
                                 </div>
@@ -184,7 +184,7 @@ const SprintPlanner = ({ onClose }) => {
                                 </div>
                             </div>
                             <div className="glass-card p-4">
-                                <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+                                <div className="flex items-center gap-2 text-muted text-sm mb-1">
                                     <TrendingUp className="w-4 h-4" />
                                     Velocity
                                 </div>
@@ -193,7 +193,7 @@ const SprintPlanner = ({ onClose }) => {
                                 </div>
                             </div>
                             <div className="glass-card p-4">
-                                <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+                                <div className="flex items-center gap-2 text-muted text-sm mb-1">
                                     <Clock className="w-4 h-4" />
                                     Est. Completion
                                 </div>
@@ -209,8 +209,8 @@ const SprintPlanner = ({ onClose }) => {
                                 <div className="flex items-start gap-3">
                                     <Zap className="w-5 h-5 text-indigo-400 mt-0.5" />
                                     <div>
-                                        <div className="text-sm font-medium text-gray-200 mb-1">AI Recommendation</div>
-                                        <div className="text-sm text-gray-400">{sprintPlan.optimization.recommendation}</div>
+                                        <div className="text-sm font-medium text-foreground mb-1">AI Recommendation</div>
+                                        <div className="text-sm text-muted">{sprintPlan.optimization.recommendation}</div>
                                     </div>
                                 </div>
                             </div>
@@ -221,14 +221,14 @@ const SprintPlanner = ({ onClose }) => {
                             <div className="glass-card p-4">
                                 <div className="flex items-center gap-2 mb-4">
                                     <BarChart3 className="w-5 h-5 text-purple-400" />
-                                    <span className="font-medium text-gray-200">Workload Distribution</span>
+                                    <span className="font-medium text-foreground">Workload Distribution</span>
                                 </div>
                                 <div className="space-y-3">
                                     {sprintPlan.optimization.workload_distribution.map((dev, idx) => (
                                         <div key={idx} className="flex items-center gap-4">
                                             <div className="w-32 flex items-center gap-2">
-                                                <User className="w-4 h-4 text-gray-400" />
-                                                <span className="text-sm text-gray-300 truncate">{dev.username}</span>
+                                                <User className="w-4 h-4 text-muted" />
+                                                <span className="text-sm text-muted truncate">{dev.username}</span>
                                             </div>
                                             <div className="flex-1 h-6 bg-white/5 rounded-full overflow-hidden flex">
                                                 <div
@@ -241,8 +241,8 @@ const SprintPlanner = ({ onClose }) => {
                                                 />
                                             </div>
                                             <div className="w-20 text-right">
-                                                <span className="text-sm text-gray-400">{dev.current_tasks}</span>
-                                                <span className="text-gray-600 mx-1">→</span>
+                                                <span className="text-sm text-muted">{dev.current_tasks}</span>
+                                                <span className="text-muted mx-1">→</span>
                                                 <span className="text-sm text-white font-medium">{dev.total_after_plan}</span>
                                             </div>
                                         </div>
@@ -257,9 +257,9 @@ const SprintPlanner = ({ onClose }) => {
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-2">
                                         <Users className="w-5 h-5 text-cyan-400" />
-                                        <span className="font-medium text-gray-200">Suggested Assignments</span>
+                                        <span className="font-medium text-foreground">Suggested Assignments</span>
                                     </div>
-                                    <span className="text-sm text-gray-400">
+                                    <span className="text-sm text-muted">
                                         {selectedAssignments.length} selected
                                     </span>
                                 </div>
@@ -277,16 +277,16 @@ const SprintPlanner = ({ onClose }) => {
                                             >
                                                 <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${isSelected ? 'bg-indigo-500 border-indigo-500' : 'border-gray-500'
                                                     }`}>
-                                                    {isSelected && <CheckCircle2 className="w-3 h-3 text-white" />}
+                                                    {isSelected && <CheckCircle2 className="w-3 h-3 text-foreground" />}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <div className="text-sm text-gray-200 truncate">{suggestion.task_title}</div>
-                                                    <div className="text-xs text-gray-500">{suggestion.reason}</div>
+                                                    <div className="text-sm text-foreground truncate">{suggestion.task_title}</div>
+                                                    <div className="text-xs text-muted">{suggestion.reason}</div>
                                                 </div>
                                                 <span className={`px-2 py-0.5 text-xs rounded border ${getPriorityColor(suggestion.task_priority)}`}>
                                                     {suggestion.task_priority}
                                                 </span>
-                                                <ArrowRight className="w-4 h-4 text-gray-500" />
+                                                <ArrowRight className="w-4 h-4 text-muted" />
                                                 <div className="flex items-center gap-1.5">
                                                     <User className="w-4 h-4 text-indigo-400" />
                                                     <span className="text-sm text-indigo-400">{suggestion.suggested_assignee}</span>
@@ -303,16 +303,16 @@ const SprintPlanner = ({ onClose }) => {
                             <div className="glass-card p-4">
                                 <div className="flex items-center gap-2 mb-4">
                                     <Target className="w-5 h-5 text-yellow-400" />
-                                    <span className="font-medium text-gray-200">Sprint Milestones</span>
+                                    <span className="font-medium text-foreground">Sprint Milestones</span>
                                 </div>
                                 <div className="space-y-3">
                                     {sprintPlan.milestones.map((milestone, idx) => (
                                         <div key={idx} className="flex items-center gap-4">
                                             <div className="w-16 text-center">
-                                                <div className="text-lg font-bold text-white">Day {milestone.day}</div>
+                                                <div className="text-lg font-bold text-foreground">Day {milestone.day}</div>
                                             </div>
-                                            <ChevronRight className="w-4 h-4 text-gray-500" />
-                                            <div className="text-sm text-gray-400">{milestone.target}</div>
+                                            <ChevronRight className="w-4 h-4 text-muted" />
+                                            <div className="text-sm text-muted">{milestone.target}</div>
                                         </div>
                                     ))}
                                 </div>

@@ -131,7 +131,7 @@ const XPDisplay = ({ compact = false, onXPChange }) => {
                                 />
                             </motion.div>
                         </div>
-                        <div className="text-[10px] text-slate-500 mt-0.5">
+                        <div className="text-[10px] text-muted mt-0.5">
                             {stats.xp_progress}/{stats.xp_to_next_level} to Lv.{stats.level + 1}
                         </div>
                     </div>
@@ -141,7 +141,7 @@ const XPDisplay = ({ compact = false, onXPChange }) => {
                 <AnimatePresence>
                     {expanded && (
                         <motion.div
-                            className="absolute bottom-full left-0 right-0 mb-2 p-4 rounded-xl bg-slate-900/95 backdrop-blur-sm border border-white/10 shadow-xl z-50"
+                            className="absolute bottom-full left-0 right-0 mb-2 p-4 rounded-xl bg-background/95 backdrop-blur-sm border border-white/10 shadow-xl z-50"
                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -149,10 +149,10 @@ const XPDisplay = ({ compact = false, onXPChange }) => {
                             <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-2">
                                     <Star className="w-5 h-5" style={{ color: stats.level_config?.color }} />
-                                    <span className="font-bold text-white">Your Stats</span>
+                                    <span className="font-bold text-foreground">Your Stats</span>
                                 </div>
                                 <button onClick={(e) => { e.stopPropagation(); setExpanded(false); }}>
-                                    <X className="w-4 h-4 text-slate-400 hover:text-white" />
+                                    <X className="w-4 h-4 text-muted hover:text-foreground" />
                                 </button>
                             </div>
 
@@ -164,7 +164,7 @@ const XPDisplay = ({ compact = false, onXPChange }) => {
                                     <div className="text-2xl font-bold" style={{ color: stats.level_config?.color }}>
                                         Lv.{stats.level}
                                     </div>
-                                    <div className="text-xs text-slate-400">{stats.level_config?.title}</div>
+                                    <div className="text-xs text-muted">{stats.level_config?.title}</div>
                                 </motion.div>
 
                                 <motion.div
@@ -175,7 +175,7 @@ const XPDisplay = ({ compact = false, onXPChange }) => {
                                         <Zap className="w-5 h-5" />
                                         {stats.xp.toLocaleString()}
                                     </div>
-                                    <div className="text-xs text-slate-400">Total XP</div>
+                                    <div className="text-xs text-muted">Total XP</div>
                                 </motion.div>
 
                                 <motion.div
@@ -186,7 +186,7 @@ const XPDisplay = ({ compact = false, onXPChange }) => {
                                         <Award className="w-5 h-5" />
                                         {stats.total_tasks_completed}
                                     </div>
-                                    <div className="text-xs text-slate-400">Tasks Done</div>
+                                    <div className="text-xs text-muted">Tasks Done</div>
                                 </motion.div>
 
                                 <motion.div
@@ -197,7 +197,7 @@ const XPDisplay = ({ compact = false, onXPChange }) => {
                                         <Target className="w-5 h-5" />
                                         {Math.round(progressPercent)}%
                                     </div>
-                                    <div className="text-xs text-slate-400">To Next Level</div>
+                                    <div className="text-xs text-muted">To Next Level</div>
                                 </motion.div>
                             </div>
 
@@ -263,7 +263,7 @@ const XPDisplay = ({ compact = false, onXPChange }) => {
                     <span style={{ color: stats.level_config?.color }}>{stats.level}</span>
                 </motion.div>
                 <div>
-                    <div className="text-sm text-slate-400">Level {stats.level}</div>
+                    <div className="text-sm text-muted">Level {stats.level}</div>
                     <div
                         className="text-lg font-bold"
                         style={{ color: stats.level_config?.color }}
@@ -276,14 +276,14 @@ const XPDisplay = ({ compact = false, onXPChange }) => {
                     animate={{ y: [0, -3, 0] }}
                     transition={{ duration: 1, repeat: Infinity }}
                 >
-                    <ChevronUp className="w-5 h-5 text-slate-400" />
+                    <ChevronUp className="w-5 h-5 text-muted" />
                 </motion.div>
             </div>
 
             {/* XP Progress */}
             <div className="mb-2">
                 <div className="flex justify-between text-xs mb-1">
-                    <span className="text-slate-400">XP Progress</span>
+                    <span className="text-muted">XP Progress</span>
                     <span style={{ color: stats.level_config?.color }}>
                         {stats.xp_progress} / {stats.xp_to_next_level}
                     </span>
@@ -317,7 +317,7 @@ const XPDisplay = ({ compact = false, onXPChange }) => {
                 >
                     <Zap className="w-4 h-4 text-yellow-500" />
                     <span className="text-white font-medium">{stats.xp.toLocaleString()}</span>
-                    <span className="text-slate-400">XP</span>
+                    <span className="text-muted">XP</span>
                 </motion.div>
                 <motion.div
                     className="flex items-center gap-1 cursor-pointer"
@@ -325,7 +325,7 @@ const XPDisplay = ({ compact = false, onXPChange }) => {
                 >
                     <Award className="w-4 h-4 text-indigo-400" />
                     <span className="text-white font-medium">{stats.total_tasks_completed}</span>
-                    <span className="text-slate-400">tasks</span>
+                    <span className="text-muted">tasks</span>
                 </motion.div>
             </div>
         </motion.div>

@@ -49,15 +49,15 @@ const ListView = ({ tasks, users, onTaskClick }) => {
                 const user = getUser(params.value);
                 return user ? (
                     <div className="flex items-center space-x-2">
-                        <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-bold text-gray-600">
+                        <div className="w-6 h-6 rounded-full bg-surface flex items-center justify-center text-[10px] font-bold text-muted">
                             {user.username.substring(0, 2).toUpperCase()}
                         </div>
                         <span>{user.username}</span>
                     </div>
                 ) : (
                     <div className="flex items-center space-x-2 text-muted">
-                        <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
-                            <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                        <div className="w-6 h-6 rounded-full bg-surface flex items-center justify-center">
+                            <svg className="w-4 h-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                         </div>
                         <span>Unassigned</span>
                     </div>
@@ -94,7 +94,7 @@ const ListView = ({ tasks, users, onTaskClick }) => {
                 // Simple icon placeholder
                 return (
                     <div className="flex items-center space-x-2">
-                        <span className={`font-medium ${colors[params.value] || 'text-gray-500'}`}>{params.value}</span>
+                        <span className={`font-medium ${colors[params.value] || 'text-muted'}`}>{params.value}</span>
                     </div>
                 );
             }
@@ -105,13 +105,13 @@ const ListView = ({ tasks, users, onTaskClick }) => {
             width: 140,
             cellRenderer: params => {
                 const styles = {
-                    'TODO': 'bg-gray-200 text-gray-700',
+                    'TODO': 'bg-surface text-foreground',
                     'IN_PROGRESS': 'bg-blue-100 text-blue-700',
                     'IN_REVIEW': 'bg-purple-100 text-purple-700',
                     'DONE': 'bg-green-100 text-green-700'
                 };
                 return (
-                    <span className={`px-2 py-0.5 rounded font-semibold text-xs uppercase ${styles[params.value] || 'bg-gray-100'}`}>
+                    <span className={`px-2 py-0.5 rounded font-semibold text-xs uppercase ${styles[params.value] || 'bg-surface'}`}>
                         {params.value.replace('_', ' ')}
                     </span>
                 );

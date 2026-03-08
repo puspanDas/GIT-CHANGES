@@ -230,7 +230,7 @@ const DependencyGraph = ({ projectId, tasks = [], onTaskClick }) => {
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                     <GitBranch className="text-purple-400" size={20} />
-                    <h3 className="text-lg font-semibold text-white">Dependency Graph</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Dependency Graph</h3>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -238,7 +238,7 @@ const DependencyGraph = ({ projectId, tasks = [], onTaskClick }) => {
                     <select
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
-                        className="bg-white/10 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white"
+                        className="bg-white/10 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-foreground"
                     >
                         <option value="all">All Tasks</option>
                         <option value="blocked">Blocked Only</option>
@@ -251,14 +251,14 @@ const DependencyGraph = ({ projectId, tasks = [], onTaskClick }) => {
                             onClick={() => setZoom(z => Math.max(0.5, z - 0.1))}
                             className="p-1.5 hover:bg-white/10 rounded-l-lg transition-colors"
                         >
-                            <ZoomOut size={16} className="text-white/70" />
+                            <ZoomOut size={16} className="text-foreground/70" />
                         </button>
-                        <span className="text-xs text-white/70 px-2">{Math.round(zoom * 100)}%</span>
+                        <span className="text-xs text-foreground/70 px-2">{Math.round(zoom * 100)}%</span>
                         <button
                             onClick={() => setZoom(z => Math.min(2, z + 0.1))}
                             className="p-1.5 hover:bg-white/10 rounded-r-lg transition-colors"
                         >
-                            <ZoomIn size={16} className="text-white/70" />
+                            <ZoomIn size={16} className="text-foreground/70" />
                         </button>
                     </div>
                 </div>
@@ -267,16 +267,16 @@ const DependencyGraph = ({ projectId, tasks = [], onTaskClick }) => {
             {/* Stats */}
             <div className="flex gap-4 mb-4">
                 <div className="flex items-center gap-2 text-sm">
-                    <div className="w-3 h-3 rounded-full bg-gray-500"></div>
-                    <span className="text-white/60">Total: {graphData.nodes.length}</span>
+                    <div className="w-3 h-3 rounded-full bg-surface0"></div>
+                    <span className="text-foreground/60">Total: {graphData.nodes.length}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                     <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    <span className="text-white/60">Blocked: {graphData.blocked_tasks.length}</span>
+                    <span className="text-foreground/60">Blocked: {graphData.blocked_tasks.length}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                     <GitBranch size={14} className="text-purple-400" />
-                    <span className="text-white/60">Dependencies: {graphData.edges.length}</span>
+                    <span className="text-foreground/60">Dependencies: {graphData.edges.length}</span>
                 </div>
             </div>
 
@@ -461,7 +461,7 @@ const DependencyGraph = ({ projectId, tasks = [], onTaskClick }) => {
             </div>
 
             {/* Legend */}
-            <div className="flex flex-wrap gap-4 mt-4 text-xs text-white/60">
+            <div className="flex flex-wrap gap-4 mt-4 text-xs text-foreground/60">
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-green-500"></div>
                     <span>Done</span>
@@ -475,7 +475,7 @@ const DependencyGraph = ({ projectId, tasks = [], onTaskClick }) => {
                     <span>In Review</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-gray-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-surface0"></div>
                     <span>Todo</span>
                 </div>
                 <div className="flex items-center gap-2">

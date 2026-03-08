@@ -89,7 +89,7 @@ const Analytics = () => {
                         <div className="flex items-center justify-between">
                             <div>
                                 <h2 className="text-2xl font-bold mb-2">Team Health Score</h2>
-                                <p className="text-white/90">Overall team performance and wellbeing</p>
+                                <p className="text-foreground/90">Overall team performance and wellbeing</p>
                             </div>
                             <div className="text-center">
                                 <div className="text-6xl font-bold mb-2">{teamHealth.health_score}</div>
@@ -102,8 +102,8 @@ const Analytics = () => {
                                 <ul className="space-y-1">
                                     {teamHealth.insights.slice(0, 3).map((insight, idx) => (
                                         <li key={idx} className="flex items-start space-x-2">
-                                            <span className="text-white/80">•</span>
-                                            <span className="text-white/90">{insight}</span>
+                                            <span className="text-foreground/80">•</span>
+                                            <span className="text-foreground/90">{insight}</span>
                                         </li>
                                     ))}
                                 </ul>
@@ -235,7 +235,7 @@ const Analytics = () => {
                                             {insights.sprint_prediction.will_complete_on_time ? 'On Track' : 'At Risk'}
                                         </span>
                                     </div>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-sm text-muted">
                                         {insights.sprint_prediction.remaining_tasks} tasks remaining,
                                         estimated {insights.sprint_prediction.estimated_days_needed} days needed
                                     </p>
@@ -249,10 +249,10 @@ const Analytics = () => {
                                     <div className="text-2xl font-bold text-purple-600 mb-1">
                                         {insights.delivery_forecast.estimated_days_to_completion} days
                                     </div>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-sm text-muted">
                                         {insights.delivery_forecast.remaining_tasks} tasks remaining
                                     </p>
-                                    <p className="text-xs text-gray-500 mt-1">
+                                    <p className="text-xs text-muted mt-1">
                                         Confidence: {insights.delivery_forecast.confidence}
                                     </p>
                                 </div>

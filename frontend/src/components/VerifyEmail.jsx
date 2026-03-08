@@ -45,10 +45,10 @@ const VerifyEmail = () => {
                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                             className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 mb-6 shadow-lg"
                         >
-                            <Loader2 className="w-10 h-10 text-white" />
+                            <Loader2 className="w-10 h-10 text-foreground" />
                         </motion.div>
-                        <h2 className="text-2xl font-bold mb-3 text-white">Verifying Your Email...</h2>
-                        <p className="text-slate-400">Please wait while we verify your email address.</p>
+                        <h2 className="text-2xl font-bold mb-3 text-foreground">Verifying Your Email...</h2>
+                        <p className="text-muted">Please wait while we verify your email address.</p>
                     </>
                 )}
 
@@ -60,10 +60,10 @@ const VerifyEmail = () => {
                             transition={{ type: "spring", stiffness: 200 }}
                             className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 mb-6 shadow-lg"
                         >
-                            <CheckCircle className="w-10 h-10 text-white" />
+                            <CheckCircle className="w-10 h-10 text-foreground" />
                         </motion.div>
-                        <h2 className="text-2xl font-bold mb-3 text-white">Email Verified! 🎉</h2>
-                        <p className="text-slate-400 mb-6">{message}</p>
+                        <h2 className="text-2xl font-bold mb-3 text-foreground">Email Verified! 🎉</h2>
+                        <p className="text-muted mb-6">{message}</p>
                         <Link
                             to="/login"
                             className="inline-flex items-center gap-2 btn-primary py-3 px-6"
@@ -81,10 +81,10 @@ const VerifyEmail = () => {
                             transition={{ type: "spring", stiffness: 200 }}
                             className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-red-500 to-rose-600 mb-6 shadow-lg"
                         >
-                            <XCircle className="w-10 h-10 text-white" />
+                            <XCircle className="w-10 h-10 text-foreground" />
                         </motion.div>
-                        <h2 className="text-2xl font-bold mb-3 text-white">Verification Failed</h2>
-                        <p className="text-slate-400 mb-6">{message}</p>
+                        <h2 className="text-2xl font-bold mb-3 text-foreground">Verification Failed</h2>
+                        <p className="text-muted mb-6">{message}</p>
                         <div className="space-y-3">
                             <Link to="/register" className="block w-full btn-secondary py-3">
                                 Try Registering Again

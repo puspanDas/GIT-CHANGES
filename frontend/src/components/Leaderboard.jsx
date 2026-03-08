@@ -44,7 +44,7 @@ const Leaderboard = ({ compact = false }) => {
             case 3:
                 return <span className="text-xl">🥉</span>;
             default:
-                return <span className="text-sm font-bold text-slate-500">#{rank}</span>;
+                return <span className="text-sm font-bold text-muted">#{rank}</span>;
         }
     };
 
@@ -65,7 +65,7 @@ const Leaderboard = ({ compact = false }) => {
 
     if (leaderboard.length === 0) {
         return (
-            <div className="text-center py-4 text-slate-400 text-sm">
+            <div className="text-center py-4 text-muted text-sm">
                 <Trophy className="w-8 h-8 mx-auto mb-2 opacity-30" />
                 <p>No champions yet!</p>
                 <p className="text-xs">Complete tasks to earn XP</p>
@@ -115,7 +115,7 @@ const Leaderboard = ({ compact = false }) => {
             {/* User info */}
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm text-white truncate">
+                    <span className="font-medium text-sm text-foreground truncate">
                         {user.username}
                     </span>
                     <span
@@ -128,7 +128,7 @@ const Leaderboard = ({ compact = false }) => {
                         Lv.{user.level}
                     </span>
                 </div>
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-muted">
                     {user.level_config?.title}
                 </div>
             </div>
@@ -143,7 +143,7 @@ const Leaderboard = ({ compact = false }) => {
                     <Zap className="w-3 h-3" />
                     {user.xp.toLocaleString()}
                 </motion.div>
-                <div className="text-xs text-slate-500">
+                <div className="text-xs text-muted">
                     {user.total_tasks_completed} tasks
                 </div>
             </div>
@@ -155,7 +155,7 @@ const Leaderboard = ({ compact = false }) => {
             {!compact && (
                 <div className="flex items-center gap-2 mb-4">
                     <Trophy className="w-5 h-5 text-yellow-500" />
-                    <h3 className="text-lg font-bold text-white">Sprint Champions</h3>
+                    <h3 className="text-lg font-bold text-foreground">Sprint Champions</h3>
                 </div>
             )}
 
@@ -181,7 +181,7 @@ const Leaderboard = ({ compact = false }) => {
 
             {!compact && leaderboard.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-white/10 text-center">
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-muted">
                         Complete tasks to climb the leaderboard! 🚀
                     </p>
                 </div>
@@ -198,7 +198,7 @@ const Leaderboard = ({ compact = false }) => {
                         onClick={() => setExpanded(false)}
                     >
                         <motion.div
-                            className="w-full max-w-md mx-4 p-6 rounded-2xl bg-slate-900/95 border border-white/10 shadow-2xl"
+                            className="w-full max-w-md mx-4 p-6 rounded-2xl bg-background/95 border border-white/10 shadow-2xl"
                             initial={{ scale: 0.9, y: 50 }}
                             animate={{ scale: 1, y: 0 }}
                             exit={{ scale: 0.9, y: 50 }}
@@ -213,15 +213,15 @@ const Leaderboard = ({ compact = false }) => {
                                         <Trophy className="w-8 h-8 text-yellow-500" />
                                     </motion.div>
                                     <div>
-                                        <h2 className="text-xl font-bold text-white">Sprint Champions</h2>
-                                        <p className="text-sm text-slate-400">Top performers this sprint</p>
+                                        <h2 className="text-xl font-bold text-foreground">Sprint Champions</h2>
+                                        <p className="text-sm text-muted">Top performers this sprint</p>
                                     </div>
                                 </div>
                                 <button
                                     onClick={() => setExpanded(false)}
                                     className="p-2 hover:bg-white/10 rounded-lg transition-colors"
                                 >
-                                    <X className="w-5 h-5 text-slate-400" />
+                                    <X className="w-5 h-5 text-muted" />
                                 </button>
                             </div>
 
@@ -234,9 +234,9 @@ const Leaderboard = ({ compact = false }) => {
                             <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Flame className="w-5 h-5 text-orange-500" />
-                                    <span className="font-semibold text-white">How to Climb</span>
+                                    <span className="font-semibold text-foreground">How to Climb</span>
                                 </div>
-                                <ul className="text-xs text-slate-300 space-y-1">
+                                <ul className="text-xs text-muted space-y-1">
                                     <li>🎯 Complete HIGH priority tasks = +100 XP</li>
                                     <li>🐛 Fix bugs = +50 XP</li>
                                     <li>📋 Complete MEDIUM tasks = +35 XP</li>
@@ -313,14 +313,14 @@ const Leaderboard = ({ compact = false }) => {
                                         <Zap className="w-5 h-5" />
                                         {selectedUser.xp.toLocaleString()}
                                     </div>
-                                    <div className="text-xs text-slate-400">Total XP</div>
+                                    <div className="text-xs text-muted">Total XP</div>
                                 </div>
                                 <div className="p-3 rounded-lg bg-white/5">
                                     <div className="text-2xl font-bold text-indigo-400 flex items-center justify-center gap-1">
                                         <Award className="w-5 h-5" />
                                         {selectedUser.total_tasks_completed}
                                     </div>
-                                    <div className="text-xs text-slate-400">Tasks Done</div>
+                                    <div className="text-xs text-muted">Tasks Done</div>
                                 </div>
                             </div>
 

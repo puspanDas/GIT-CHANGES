@@ -123,7 +123,7 @@ export const LevelUpModal = ({ level, levelConfig, onClose }) => {
                 </motion.p>
 
                 <motion.p
-                    className="text-white/70 text-sm"
+                    className="text-foreground/70 text-sm"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.9 }}
@@ -237,8 +237,8 @@ export const StatsCard = ({ icon: Icon, label, value, color, onClick }) => {
                 <Icon className="w-5 h-5" style={{ color }} />
             </div>
             <div>
-                <div className="text-xs text-slate-400">{label}</div>
-                <div className="text-lg font-bold text-white">{value}</div>
+                <div className="text-xs text-muted">{label}</div>
+                <div className="text-lg font-bold text-foreground">{value}</div>
             </div>
         </motion.div>
     );

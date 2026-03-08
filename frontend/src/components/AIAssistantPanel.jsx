@@ -50,7 +50,7 @@ const AIAssistantPanel = ({ taskId, isOpen, onToggle }) => {
             case 'low': return 'text-green-400 bg-green-400/10';
             case 'medium': return 'text-yellow-400 bg-yellow-400/10';
             case 'high': return 'text-red-400 bg-red-400/10';
-            default: return 'text-gray-400 bg-gray-400/10';
+            default: return 'text-muted bg-gray-400/10';
         }
     };
 
@@ -61,8 +61,8 @@ const AIAssistantPanel = ({ taskId, isOpen, onToggle }) => {
                 className="w-full flex items-center gap-2 px-4 py-3 glass-card hover:border-purple-500/30 transition-all group"
             >
                 <Sparkles className="w-5 h-5 text-purple-400 group-hover:animate-pulse" />
-                <span className="text-sm font-medium text-gray-200">AI Assistant</span>
-                <ChevronDown className="w-4 h-4 ml-auto text-gray-400" />
+                <span className="text-sm font-medium text-foreground">AI Assistant</span>
+                <ChevronDown className="w-4 h-4 ml-auto text-muted" />
             </button>
         );
     }
@@ -75,8 +75,8 @@ const AIAssistantPanel = ({ taskId, isOpen, onToggle }) => {
                 className="w-full flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border-b border-white/5"
             >
                 <Sparkles className="w-5 h-5 text-purple-400" />
-                <span className="text-sm font-medium text-gray-200">AI Assistant</span>
-                <ChevronUp className="w-4 h-4 ml-auto text-gray-400" />
+                <span className="text-sm font-medium text-foreground">AI Assistant</span>
+                <ChevronUp className="w-4 h-4 ml-auto text-muted" />
             </button>
 
             {/* Content */}
@@ -84,7 +84,7 @@ const AIAssistantPanel = ({ taskId, isOpen, onToggle }) => {
                 {loading && (
                     <div className="flex items-center justify-center py-8">
                         <Loader2 className="w-6 h-6 text-purple-400 animate-spin" />
-                        <span className="ml-2 text-sm text-gray-400">Analyzing task...</span>
+                        <span className="ml-2 text-sm text-muted">Analyzing task...</span>
                     </div>
                 )}
 
@@ -106,7 +106,7 @@ const AIAssistantPanel = ({ taskId, isOpen, onToggle }) => {
                         {/* Complexity Badge */}
                         {suggestions.complexity && (
                             <div className="flex items-center justify-between">
-                                <span className="text-xs text-gray-400">Task Complexity</span>
+                                <span className="text-xs text-muted">Task Complexity</span>
                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${getComplexityColor(suggestions.complexity.level)}`}>
                                     {suggestions.complexity.level.toUpperCase()} • {suggestions.complexity.estimated_hours}
                                 </span>
@@ -130,13 +130,13 @@ const AIAssistantPanel = ({ taskId, isOpen, onToggle }) => {
                         {/* Suggestions */}
                         {suggestions.suggestions?.length > 0 && (
                             <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                                <div className="flex items-center gap-2 text-sm font-medium text-muted">
                                     <Lightbulb className="w-4 h-4 text-yellow-400" />
                                     Implementation Tips
                                 </div>
                                 <ul className="space-y-1">
                                     {suggestions.suggestions.map((tip, idx) => (
-                                        <li key={idx} className="flex items-start gap-2 text-sm text-gray-400">
+                                        <li key={idx} className="flex items-start gap-2 text-sm text-muted">
                                             <Zap className="w-3 h-3 mt-1 text-purple-400 flex-shrink-0" />
                                             {tip}
                                         </li>
@@ -148,7 +148,7 @@ const AIAssistantPanel = ({ taskId, isOpen, onToggle }) => {
                         {/* Code Hints */}
                         {suggestions.code_hints?.length > 0 && (
                             <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                                <div className="flex items-center gap-2 text-sm font-medium text-muted">
                                     <Code className="w-4 h-4 text-cyan-400" />
                                     Code Examples
                                 </div>
@@ -158,12 +158,12 @@ const AIAssistantPanel = ({ taskId, isOpen, onToggle }) => {
                                             onClick={() => toggleHint(idx)}
                                             className="w-full flex items-center justify-between px-3 py-2 hover:bg-white/5 transition-colors"
                                         >
-                                            <span className="text-xs text-gray-300">{hint.title}</span>
-                                            <span className="text-xs text-gray-500">{hint.language}</span>
+                                            <span className="text-xs text-muted">{hint.title}</span>
+                                            <span className="text-xs text-muted">{hint.language}</span>
                                         </button>
                                         {expandedHints[idx] && (
                                             <div className="relative">
-                                                <pre className="p-3 text-xs overflow-x-auto text-gray-300 bg-black/20">
+                                                <pre className="p-3 text-xs overflow-x-auto text-muted bg-black/20">
                                                     <code>{hint.code}</code>
                                                 </pre>
                                                 <button
@@ -173,7 +173,7 @@ const AIAssistantPanel = ({ taskId, isOpen, onToggle }) => {
                                                     {copiedIndex === idx ? (
                                                         <Check className="w-3 h-3 text-green-400" />
                                                     ) : (
-                                                        <Copy className="w-3 h-3 text-gray-400" />
+                                                        <Copy className="w-3 h-3 text-muted" />
                                                     )}
                                                 </button>
                                             </div>
@@ -186,7 +186,7 @@ const AIAssistantPanel = ({ taskId, isOpen, onToggle }) => {
                         {/* Resources */}
                         {suggestions.resources?.length > 0 && (
                             <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                                <div className="flex items-center gap-2 text-sm font-medium text-muted">
                                     <BookOpen className="w-4 h-4 text-blue-400" />
                                     Resources
                                 </div>
@@ -199,10 +199,10 @@ const AIAssistantPanel = ({ taskId, isOpen, onToggle }) => {
                                             rel="noopener noreferrer"
                                             className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group"
                                         >
-                                            <span className="text-xs text-gray-400 group-hover:text-gray-300 flex-1 truncate">
+                                            <span className="text-xs text-muted group-hover:text-muted flex-1 truncate">
                                                 {resource.title}
                                             </span>
-                                            <ExternalLink className="w-3 h-3 text-gray-500 group-hover:text-gray-400" />
+                                            <ExternalLink className="w-3 h-3 text-muted group-hover:text-muted" />
                                         </a>
                                     ))}
                                 </div>

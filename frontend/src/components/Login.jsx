@@ -45,7 +45,7 @@ const Login = ({ onLogin }) => {
                         transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
                         className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 mb-4 shadow-lg glow-primary"
                     >
-                        <Lock className="w-8 h-8 text-white" />
+                        <Lock className="w-8 h-8 text-foreground" />
                     </motion.div>
                     <motion.h2
                         initial={{ opacity: 0, y: 10 }}
@@ -59,7 +59,7 @@ const Login = ({ onLogin }) => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.4 }}
-                        className="text-slate-400 mt-2"
+                        className="text-muted mt-2"
                     >
                         Sign in to access your workspace
                     </motion.p>
@@ -82,9 +82,9 @@ const Login = ({ onLogin }) => {
                         transition={{ delay: 0.4 }}
                         className="space-y-2"
                     >
-                        <label className="text-sm font-medium text-slate-400 ml-1">Username</label>
+                        <label className="text-sm font-medium text-muted ml-1">Username</label>
                         <div className="relative group">
-                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-400 transition-colors duration-300" />
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted group-focus-within:text-indigo-400 transition-colors duration-300" />
                             <input
                                 type="text"
                                 value={username}
@@ -102,9 +102,9 @@ const Login = ({ onLogin }) => {
                         transition={{ delay: 0.5 }}
                         className="space-y-2"
                     >
-                        <label className="text-sm font-medium text-slate-400 ml-1">Password</label>
+                        <label className="text-sm font-medium text-muted ml-1">Password</label>
                         <div className="relative group">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-400 transition-colors duration-300" />
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted group-focus-within:text-indigo-400 transition-colors duration-300" />
                             <input
                                 type="password"
                                 value={password}
@@ -136,7 +136,7 @@ const Login = ({ onLogin }) => {
                     transition={{ delay: 0.7 }}
                     className="mt-8 text-center"
                 >
-                    <p className="text-slate-400 text-sm">
+                    <p className="text-muted text-sm">
                         Don't have an account?{' '}
                         <Link to="/register" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors hover:underline">
                             Create Account

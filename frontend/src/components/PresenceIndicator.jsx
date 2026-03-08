@@ -13,7 +13,7 @@ const UserAvatar = ({ username, color, size = 'md', showStatus = false, status =
     const statusColors = {
         online: 'bg-green-500',
         away: 'bg-yellow-500',
-        offline: 'bg-gray-500'
+        offline: 'bg-surface0'
     };
 
     const initial = username ? username.charAt(0).toUpperCase() : '?';
@@ -66,7 +66,7 @@ export const TaskViewerStack = ({ maxVisible = 3 }) => {
                     </div>
                 )}
             </div>
-            <span className="text-xs text-white/60">
+            <span className="text-xs text-foreground/60">
                 {taskViewers.length} viewing
             </span>
         </div>
@@ -106,13 +106,13 @@ export const ActiveUsersPanel = () => {
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                     <Users size={18} className="text-purple-400" />
-                    <h3 className="text-sm font-medium text-white">Active Users</h3>
+                    <h3 className="text-sm font-medium text-foreground">Active Users</h3>
                 </div>
                 <ConnectionStatus />
             </div>
 
             {activeUsers.length === 0 ? (
-                <p className="text-sm text-white/50">No other users online</p>
+                <p className="text-sm text-foreground/50">No other users online</p>
             ) : (
                 <div className="space-y-2">
                     {activeUsers.map(user => (
@@ -128,11 +128,11 @@ export const ActiveUsersPanel = () => {
                                 status="online"
                             />
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-white truncate">
+                                <p className="text-sm font-medium text-foreground truncate">
                                     {user.username}
                                 </p>
                                 {user.task_id && (
-                                    <p className="text-xs text-white/50 truncate">
+                                    <p className="text-xs text-foreground/50 truncate">
                                         Viewing task #{user.task_id}
                                     </p>
                                 )}
@@ -158,7 +158,7 @@ export const TypingIndicator = () => {
             : `${typingUsers[0]} and ${typingUsers.length - 1} others are typing...`;
 
     return (
-        <div className="flex items-center gap-2 text-sm text-white/60 animate-pulse">
+        <div className="flex items-center gap-2 text-sm text-foreground/60 animate-pulse">
             <div className="typing-dots flex gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: '0ms' }} />
                 <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -182,7 +182,7 @@ const PresenceIndicator = ({ taskId, compact = false }) => {
         return (
             <div className="flex items-center gap-1">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-xs text-white/60">{viewers.length}</span>
+                <span className="text-xs text-foreground/60">{viewers.length}</span>
             </div>
         );
     }
@@ -201,7 +201,7 @@ const PresenceIndicator = ({ taskId, compact = false }) => {
                 ))}
             </div>
             {viewers.length > 3 && (
-                <span className="text-xs text-white/60">+{viewers.length - 3}</span>
+                <span className="text-xs text-foreground/60">+{viewers.length - 3}</span>
             )}
         </div>
     );
