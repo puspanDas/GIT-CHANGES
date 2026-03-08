@@ -11,6 +11,7 @@ import Leaderboard from './Leaderboard';
 import XPDisplay from './XPDisplay';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTheme } from '../ThemeContext';
 import {
     LayoutDashboard,
     Table,
@@ -41,10 +42,13 @@ import {
     Activity,
     BarChart3,
     Sparkles,
-    Trophy
+    Trophy,
+    Sun,
+    Moon
 } from 'lucide-react';
 
 const Dashboard = ({ onLogout }) => {
+    const { theme, toggleTheme } = useTheme();
     const [tasks, setTasks] = useState([]);
     const [users, setUsers] = useState([]);
     const [currentUser, setCurrentUser] = useState(null);
@@ -366,7 +370,7 @@ const Dashboard = ({ onLogout }) => {
 
             {/* Sidebar */}
             <aside className="w-64 glass-sidebar flex flex-col z-20">
-                <div className="p-4 flex items-center space-x-2 border-b border-white/10 mb-2">
+                <div className="p-4 flex items-center space-x-2 border-b border-border mb-2">
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-lg glow-primary">
                         TF
                     </div>
@@ -375,24 +379,24 @@ const Dashboard = ({ onLogout }) => {
 
                 <div className="flex-1 overflow-y-auto py-2">
                     <div className="px-4 py-1">
-                        <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-2">Menu</div>
+                        <div className="text-xs font-semibold text-muted uppercase tracking-wider mb-2 px-2">Menu</div>
                         <button
                             onClick={() => setView('BOARD')}
-                            className={`w-full flex items-center space-x-2 px-3 py-2.5 rounded-lg cursor-pointer font-medium text-sm mb-1 transition-all duration-200 ${view === 'BOARD' ? 'bg-indigo-500/20 text-indigo-300 shadow-lg shadow-indigo-500/10' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'}`}
+                            className={`w-full flex items-center space-x-2 px-3 py-2.5 rounded-lg cursor-pointer font-medium text-sm mb-1 transition-all duration-200 ${view === 'BOARD' ? 'bg-indigo-500/20 text-indigo-300 shadow-lg shadow-indigo-500/10' : 'text-muted hover:bg-surface hover:border hover:border-border hover:text-foreground'}`}
                         >
                             <Layout className="w-4 h-4" />
                             <span>Board</span>
                         </button>
                         <button
                             onClick={() => setView('LIST')}
-                            className={`w-full flex items-center space-x-2 px-3 py-2.5 rounded-lg cursor-pointer font-medium text-sm mb-1 transition-all duration-200 ${view === 'LIST' ? 'bg-indigo-500/20 text-indigo-300 shadow-lg shadow-indigo-500/10' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'}`}
+                            className={`w-full flex items-center space-x-2 px-3 py-2.5 rounded-lg cursor-pointer font-medium text-sm mb-1 transition-all duration-200 ${view === 'LIST' ? 'bg-indigo-500/20 text-indigo-300 shadow-lg shadow-indigo-500/10' : 'text-muted hover:bg-surface hover:border hover:border-border hover:text-foreground'}`}
                         >
                             <List className="w-4 h-4" />
                             <span>List</span>
                         </button>
                         <button
                             onClick={() => setView('CALENDAR')}
-                            className={`w-full flex items-center space-x-2 px-3 py-2.5 rounded-lg cursor-pointer font-medium text-sm mb-1 transition-all duration-200 ${view === 'CALENDAR' ? 'bg-indigo-500/20 text-indigo-300 shadow-lg shadow-indigo-500/10' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'}`}
+                            className={`w-full flex items-center space-x-2 px-3 py-2.5 rounded-lg cursor-pointer font-medium text-sm mb-1 transition-all duration-200 ${view === 'CALENDAR' ? 'bg-indigo-500/20 text-indigo-300 shadow-lg shadow-indigo-500/10' : 'text-muted hover:bg-surface hover:border hover:border-border hover:text-foreground'}`}
                         >
                             <Calendar className="w-4 h-4" />
                             <span>Calendar</span>
@@ -400,7 +404,7 @@ const Dashboard = ({ onLogout }) => {
                         {currentUser && (currentUser.role === 'PM' || currentUser.role === 'PO') && (
                             <button
                                 onClick={() => setView('ANALYTICS')}
-                                className={`w-full flex items-center space-x-2 px-3 py-2.5 rounded-lg cursor-pointer font-medium text-sm mb-1 transition-all duration-200 ${view === 'ANALYTICS' ? 'bg-indigo-500/20 text-indigo-300 shadow-lg shadow-indigo-500/10' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'}`}
+                                className={`w-full flex items-center space-x-2 px-3 py-2.5 rounded-lg cursor-pointer font-medium text-sm mb-1 transition-all duration-200 ${view === 'ANALYTICS' ? 'bg-indigo-500/20 text-indigo-300 shadow-lg shadow-indigo-500/10' : 'text-muted hover:bg-surface hover:border hover:border-border hover:text-foreground'}`}
                             >
                                 <BarChart3 className="w-4 h-4" />
                                 <span>Analytics</span>
@@ -419,15 +423,15 @@ const Dashboard = ({ onLogout }) => {
                 </div>
 
                 {/* Gamification Section */}
-                <div className="px-4 py-2 border-t border-white/10">
-                    <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-2 flex items-center gap-1">
+                <div className="px-4 py-2 border-t border-border">
+                    <div className="text-xs font-semibold text-muted uppercase tracking-wider mb-2 px-2 flex items-center gap-1">
                         <Trophy className="w-3 h-3" />
                         Sprint Champions
                     </div>
                     <Leaderboard compact={true} />
                 </div>
 
-                <div className="p-4 border-t border-white/10">
+                <div className="p-4 border-t border-border">
                     {/* XP Display */}
                     {currentUser && (
                         <div className="mb-3 relative">
@@ -442,13 +446,13 @@ const Dashboard = ({ onLogout }) => {
                             </div>
                             <div className="overflow-hidden">
                                 <p className="text-sm font-medium truncate">{currentUser.username}</p>
-                                <p className="text-xs text-slate-400 truncate">{currentUser.role}</p>
+                                <p className="text-xs text-muted truncate">{currentUser.role}</p>
                             </div>
                         </div>
                     )}
                     <button
                         onClick={onLogout}
-                        className="w-full flex items-center space-x-3 px-2 py-2 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 font-medium text-sm"
+                        className="w-full flex items-center space-x-3 px-2 py-2 rounded-lg text-muted hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 font-medium text-sm"
                     >
                         <LogOut className="w-4 h-4" />
                         <span>Sign Out</span>
@@ -524,6 +528,9 @@ const Dashboard = ({ onLogout }) => {
                                 <span>Create Task</span>
                             </button>
                             <button onClick={() => alert("Share feature coming soon!")} className="p-2 hover:bg-surface rounded text-muted"><Share2 className="w-4 h-4" /></button>
+                            <button onClick={toggleTheme} className="p-2 hover:bg-surface rounded text-muted">
+                                {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                            </button>
                             <button onClick={() => alert("Settings feature coming soon!")} className="p-2 hover:bg-surface rounded text-muted"><Settings className="w-4 h-4" /></button>
                         </div>
                     </div>

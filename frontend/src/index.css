@@ -8,45 +8,75 @@
     body {
         @apply min-h-screen font-sans antialiased;
         font-family: 'Inter', sans-serif;
-        /* 🇮🇳 Republic Day Theme - Deep Navy inspired by Ashoka Chakra */
-        background: linear-gradient(135deg, #0a1628 0%, #0f2847 50%, #0d1f3c 100%);
-        color: #f8fafc;
+        background: var(--background);
+        color: var(--foreground);
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     :root {
-        /* 🇮🇳 Indian Republic Day Color Palette */
-        --background: #0a1628;
+        /* Professional Light Theme - Orange, White, Slight Green */
+        --background: #f8fafc;
+        --foreground: #0f172a;
+        --surface: #ffffff;
+        --border: #e2e8f0;
+
+        /* Orange - Primary */
+        --primary: #ea580c;
+        --primary-hover: #f97316;
+        --primary-deep: #c2410c;
+
+        /* Accent */
+        --accent: #0284c7;
+        --accent-light: #38bdf8;
+        --accent-glow: rgba(2, 132, 199, 0.4);
+
+        /* Success Green tone */
+        --success: #15803d;
+        --success-light: #22c55e;
+
+        --secondary: #f1f5f9;
+        --muted: #64748b;
+
+        --danger: #dc2626;
+        --warning: #d97706;
+
+        --glass-bg: rgba(255, 255, 255, 0.8);
+        --glass-border: rgba(234, 88, 12, 0.15);
+        --glow-primary: rgba(234, 88, 12, 0.4);
+        --glow-accent: rgba(2, 132, 199, 0.3);
+    }
+
+    .dark {
+        /* Professional Dark Theme */
+        --background: #0f172a;
         --foreground: #f8fafc;
         --surface: rgba(255, 255, 255, 0.06);
         --border: rgba(255, 255, 255, 0.12);
 
-        /* Saffron - Primary (Courage & Sacrifice) */
-        --primary: #FF9933;
-        --primary-hover: #FFB366;
-        --primary-deep: #E07E1B;
+        /* Orange - Primary */
+        --primary: #f97316;
+        --primary-hover: #fdba74;
+        --primary-deep: #ea580c;
 
-        /* Navy Blue - Accent (Ashoka Chakra) */
-        --accent: #1E40AF;
-        --accent-light: #3B82F6;
-        --accent-glow: rgba(30, 64, 175, 0.4);
+        /* Accent */
+        --accent: #38bdf8;
+        --accent-light: #7dd3fc;
+        --accent-glow: rgba(56, 189, 248, 0.4);
 
-        /* India Green - Success (Fertility & Growth) */
-        --success: #138808;
-        --success-light: #16A34A;
+        /* Success Green */
+        --success: #22c55e;
+        --success-light: #4ade80;
 
-        /* White theme elements */
         --secondary: rgba(255, 255, 255, 0.08);
         --muted: #94a3b8;
 
-        /* Status Colors */
-        --danger: #DC2626;
-        --warning: #F59E0B;
+        --danger: #ef4444;
+        --warning: #f59e0b;
 
-        /* Glass effects with tricolor tints */
-        --glass-bg: rgba(10, 22, 40, 0.8);
-        --glass-border: rgba(255, 153, 51, 0.15);
-        --glow-primary: rgba(255, 153, 51, 0.4);
-        --glow-accent: rgba(30, 64, 175, 0.3);
+        --glass-bg: rgba(15, 23, 42, 0.8);
+        --glass-border: rgba(249, 115, 22, 0.15);
+        --glow-primary: rgba(249, 115, 22, 0.4);
+        --glow-accent: rgba(56, 189, 248, 0.3);
     }
 }
 
@@ -76,60 +106,60 @@
    ======================================== */
 
 .glass {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--surface);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .glass-card {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--surface);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid var(--border);
     border-radius: 16px;
     box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card:hover {
     transform: translateY(-2px);
     box-shadow:
-        0 12px 40px rgba(0, 0, 0, 0.5),
-        0 0 30px rgba(255, 153, 51, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 153, 51, 0.25);
+        0 12px 40px rgba(0, 0, 0, 0.15),
+        0 0 30px var(--glass-border),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-color: var(--primary);
 }
 
 .glass-sidebar {
-    background: rgba(10, 22, 40, 0.85);
+    background: var(--glass-bg);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border-right: 1px solid rgba(255, 153, 51, 0.1);
-    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.3);
+    border-right: 1px solid var(--border);
+    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.05);
 }
 
 .glass-modal {
-    background: rgba(15, 40, 71, 0.9);
+    background: var(--background);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 153, 51, 0.15);
+    border: 1px solid var(--glass-border);
     border-radius: 20px;
     box-shadow:
-        0 25px 50px rgba(0, 0, 0, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        0 25px 50px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .glass-input {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--surface);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border);
     border-radius: 10px;
-    color: #e2e8f0;
+    color: var(--foreground);
     transition: all 0.3s ease;
 }
 
@@ -157,31 +187,31 @@
     pointer-events: none;
 }
 
-/* 🧡 Saffron Orb - Top Right */
+/* Primary Orb - Top Right */
 .orb-1 {
     width: 400px;
     height: 400px;
-    background: linear-gradient(135deg, #FF9933, #E07E1B);
+    background: linear-gradient(135deg, var(--primary), var(--primary-deep));
     top: -100px;
     right: -100px;
     animation-delay: 0s;
 }
 
-/* 💚 India Green Orb - Bottom Left */
+/* Success Orb - Bottom Left */
 .orb-2 {
     width: 300px;
     height: 300px;
-    background: linear-gradient(135deg, #138808, #16A34A);
+    background: linear-gradient(135deg, var(--success), var(--success-light));
     bottom: -50px;
     left: -50px;
     animation-delay: -5s;
 }
 
-/* 💙 Ashoka Navy Orb - Center */
+/* Accent Orb - Center */
 .orb-3 {
     width: 200px;
     height: 200px;
-    background: linear-gradient(135deg, #1E40AF, #3B82F6);
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
     top: 50%;
     left: 30%;
     animation-delay: -10s;
@@ -231,66 +261,66 @@
 
     /* Glass Card - base component */
     .card {
-        background: rgba(255, 255, 255, 0.05);
+        background: var(--surface);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--border);
         border-radius: 12px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .card:hover {
-        border-color: rgba(255, 153, 51, 0.3);
+        border-color: var(--primary);
         transform: translateY(-2px);
         box-shadow:
-            0 12px 40px rgba(0, 0, 0, 0.4),
-            0 0 20px rgba(255, 153, 51, 0.1);
+            0 12px 40px rgba(0, 0, 0, 0.15),
+            0 0 20px var(--glass-border);
     }
 
     /* Input Fields */
     .input-field {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--surface);
+        border: 1px solid var(--border);
         border-radius: 10px;
         padding: 0.625rem 1rem;
         font-size: 0.875rem;
-        color: #e2e8f0;
+        color: var(--foreground);
         transition: all 0.3s ease;
         width: 100%;
     }
 
     .input-field:focus {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 153, 51, 0.5);
-        box-shadow: 0 0 20px rgba(255, 153, 51, 0.15);
+        background: var(--background);
+        border-color: var(--primary);
+        box-shadow: 0 0 20px var(--glass-border);
         outline: none;
     }
 
     .input-field::placeholder {
-        color: rgba(148, 163, 184, 0.6);
+        color: var(--muted);
     }
 
     .input-with-icon {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--surface);
+        border: 1px solid var(--border);
         border-radius: 10px;
         padding: 0.625rem 1rem 0.625rem 2.5rem;
         font-size: 0.875rem;
-        color: #e2e8f0;
+        color: var(--foreground);
         transition: all 0.3s ease;
         width: 100%;
     }
 
     .input-with-icon:focus {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 153, 51, 0.5);
-        box-shadow: 0 0 20px rgba(255, 153, 51, 0.15);
+        background: var(--background);
+        border-color: var(--primary);
+        box-shadow: 0 0 20px var(--glass-border);
         outline: none;
     }
 
     .input-with-icon::placeholder {
-        color: rgba(148, 163, 184, 0.6);
+        color: var(--muted);
     }
 
     /* 🇮🇳 Primary Button - Saffron Gradient */
@@ -342,9 +372,9 @@
 
     /* Secondary Button - Glass */
     .btn-secondary {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        color: #e2e8f0;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--foreground);
         font-weight: 500;
         padding: 0.625rem 1.25rem;
         border-radius: 10px;
@@ -355,8 +385,8 @@
     }
 
     .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.25);
+        background: var(--background);
+        border-color: var(--primary);
         transform: translateY(-1px);
     }
 
