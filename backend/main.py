@@ -65,8 +65,10 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 def create_user(user: schemas.UserCreate):
     if json_storage.get_user_by_username(user.username):
         raise HTTPException(status_code=400, detail="Username already registered")
-    if json_storage.get_user_by_email(user.email):
-        raise HTTPException(status_code=400, detail="Email already registered")
+        
+    email_count = json_storage.get_email_usage_count(user.email)
+    if email_count >= 10:
+        raise HTTPException(status_code=400, detail=f"Email '{user.email}' has reached the maximum limit of 10 accounts")
     
     hashed_password = auth.get_password_hash(user.password)
     db_user = json_storage.create_user(user.username, user.email, hashed_password, user.role)
@@ -88,6 +90,13 @@ def create_user(user: schemas.UserCreate):
             "role": db_user["role"]
         }
     }
+
+
+@app.get("/users/check-email")
+def check_email_usage(email: str):
+    """Check how many times an email is used in the system"""
+    count = json_storage.get_email_usage_count(email)
+    return {"email": email, "count": count, "limit": 10}
 
 
 @app.get("/verify/{token}")

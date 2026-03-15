@@ -146,6 +146,13 @@ def get_user_by_email(email: str) -> Optional[Dict]:
     return email_index.get(email)
 
 
+def get_email_usage_count(email: str) -> int:
+    """Get the number of times an email is used in the system."""
+    data = load_data()
+    users = data.get("users", [])
+    return sum(1 for u in users if u["email"] == email)
+
+
 def get_user_by_id(user_id: int) -> Optional[Dict]:
     """Get user by ID - O(1) with cache"""
     data = load_data()
@@ -174,12 +181,15 @@ def create_user(username: str, email: str, hashed_password: str, role: str) -> O
     """Create a new user with gamification fields"""
     data = load_data()
     
-    # Check username and email separately to avoid false positives
+    # Check username separately to avoid false positives
     users = data["users"]
     existing_usernames = {u["username"] for u in users}
-    existing_emails = {u["email"] for u in users}
     
-    if username in existing_usernames or email in existing_emails:
+    if username in existing_usernames:
+        return None
+        
+    email_count = sum(1 for u in users if u["email"] == email)
+    if email_count >= 10:
         return None
     
     user = {
@@ -492,16 +502,20 @@ def delete_verification_token(token: str) -> bool:
 
 
 def verify_user_email(email: str) -> bool:
-    """Mark a user as verified"""
+    """Mark all users with this email as verified"""
     data = load_data()
     users = data.get("users", [])
     
+    updated = False
     for user in users:
         if user["email"] == email:
             user["is_verified"] = True
-            save_data(data)
-            return True
-    return False
+            updated = True
+            
+    if updated:
+        save_data(data)
+    
+    return updated
 
 
 def get_user_by_email_for_verification(email: str) -> Optional[Dict]:

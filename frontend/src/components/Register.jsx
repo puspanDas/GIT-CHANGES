@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { register } from '../api';
+import React, { useState, useEffect } from 'react';
+import { register, checkEmailUsage } from '../api';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { UserPlus, Mail, Lock, User, Briefcase, ArrowRight, Loader2 } from 'lucide-react';
@@ -11,7 +11,31 @@ const Register = () => {
     const [role, setRole] = useState('DEV');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [emailCount, setEmailCount] = useState(0);
+    const [emailLimit, setEmailLimit] = useState(10);
+    const [checkingEmail, setCheckingEmail] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (email.includes('@') && email.includes('.')) {
+            const timer = setTimeout(async () => {
+                setCheckingEmail(true);
+                try {
+                    const data = await checkEmailUsage(email);
+                    setEmailCount(data.count);
+                    setEmailLimit(data.limit);
+                } catch (err) {
+                    console.error("Failed to check email count", err);
+                } finally {
+                    setCheckingEmail(false);
+                }
+            }, 500);
+            return () => clearTimeout(timer);
+        } else {
+            setEmailCount(0);
+            setCheckingEmail(false);
+        }
+    }, [email]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -118,6 +142,13 @@ const Register = () => {
                                 required
                             />
                         </div>
+                        {emailCount > 0 && (
+                            <div className={`text-xs mt-1 ml-1 font-medium flex items-center gap-1 ${emailCount >= emailLimit ? 'text-red-400' : 'text-indigo-400'}`}>
+                                {checkingEmail && <Loader2 className="w-3 h-3 animate-spin" />}
+                                This email is used for {emailCount}/{emailLimit} accounts.
+                                {emailCount >= emailLimit && ' Maximum reached.'}
+                            </div>
+                        )}
                     </motion.div>
 
                     <motion.div

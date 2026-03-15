@@ -43,6 +43,11 @@ export const resendVerification = async (email) => {
     return response.data;
 };
 
+export const checkEmailUsage = async (email) => {
+    const response = await api.get(`/users/check-email?email=${encodeURIComponent(email)}`);
+    return response.data;
+};
+
 export const getCurrentUser = async () => {
     const response = await api.get('/users/me/');
     return response.data;
