@@ -1,9 +1,10 @@
 import axios from 'axios';
 
 // Production: Use Render backend, Development: Use localhost or ngrok URL from env
-const isProduction = window.location.hostname !== 'localhost';
+const isProduction = import.meta.env.PROD || (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && !window.location.hostname.startsWith('192.168.'));
 const API_URL = import.meta.env.VITE_API_URL
     || (isProduction ? 'https://git-changes.onrender.com' : 'http://localhost:8000');
+export const WS_URL = API_URL.replace(/^http/, 'ws');
 
 const api = axios.create({
     baseURL: API_URL,

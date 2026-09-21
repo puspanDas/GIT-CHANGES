@@ -41,7 +41,7 @@ class User(UserBase):
     total_tasks_completed: int = 0
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class EmailVerification(BaseModel):
     email: EmailStr
@@ -63,7 +63,7 @@ class Project(ProjectBase):
     creator_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Task Schemas
 class TaskBase(BaseModel):
@@ -107,7 +107,7 @@ class Task(TaskBase):
     team_id: Optional[int] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Token Schemas
 class Token(BaseModel):
@@ -134,7 +134,7 @@ class Comment(CommentBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Codebase RAG Query Schema
 class CodebaseQuery(BaseModel):
@@ -152,7 +152,7 @@ class Label(LabelBase):
     id: int
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Team Schemas
 class TeamBase(BaseModel):
@@ -168,4 +168,4 @@ class Team(TeamBase):
     creator_id: int
     
     class Config:
-        orm_mode = True
+        from_attributes = True

@@ -12,8 +12,8 @@ from datetime import datetime, timedelta
 EMAIL_CONFIG = {
     'smtp_server': 'smtp.gmail.com',
     'smtp_port': 587,
-    'sender_email': os.getenv('SMTP_EMAIL', 'puspakdas124@gmail.com'),
-    'sender_password': os.getenv('SMTP_PASSWORD', 'gnsw asgw suvt jhqv'),
+    'sender_email': os.getenv('SMTP_EMAIL', ''),
+    'sender_password': os.getenv('SMTP_PASSWORD', ''),
     'sender_name': 'TaskFlow Team'
 }
 

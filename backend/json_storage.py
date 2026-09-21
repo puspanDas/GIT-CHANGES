@@ -26,7 +26,7 @@ try:
 except ImportError:
     HAS_PERF_CACHE = False
 
-DATA_FILE = "data.json"
+DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.json")
 
 # ==================== CONSTANTS ====================
 # Default values for schema migrations - using dict for single-pass updates

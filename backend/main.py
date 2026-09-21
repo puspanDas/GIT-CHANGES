@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, WebSocket, WebSocketDisconnect, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
@@ -25,7 +25,8 @@ allowed_origins = [
 # For ngrok/development, add wildcard patterns
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if is_development else allowed_origins,
+    allow_origins=allowed_origins if not is_development else [],
+    allow_origin_regex=r"https?://.*" if is_development else None,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -62,7 +63,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.post("/users/")
-def create_user(user: schemas.UserCreate):
+def create_user(user: schemas.UserCreate, background_tasks: BackgroundTasks):
     if json_storage.get_user_by_username(user.username):
         raise HTTPException(status_code=400, detail="Username already registered")
         
@@ -78,11 +79,11 @@ def create_user(user: schemas.UserCreate):
     
     # Auto-verify user and send welcome email
     json_storage.verify_user_email(user.email)
-    email_sent = email_service.send_welcome_email(user.email, user.username)
+    background_tasks.add_task(email_service.send_welcome_email, user.email, user.username)
     
     return {
         "message": "Registration successful! Welcome to TaskFlow.",
-        "email_sent": email_sent,
+        "email_sent": True,
         "user": {
             "id": db_user["id"],
             "username": db_user["username"],
@@ -127,7 +128,7 @@ def verify_email(token: str):
 
 
 @app.post("/resend-verification")
-def resend_verification(email: str):
+def resend_verification(email: str, background_tasks: BackgroundTasks):
     """Resend verification email"""
     user = json_storage.get_user_by_email_for_verification(email)
     
@@ -141,10 +142,7 @@ def resend_verification(email: str):
     token = email_service.generate_verification_token()
     json_storage.create_verification_token(email, token)
     
-    email_sent = email_service.send_verification_email(email, user["username"], token)
-    
-    if not email_sent:
-        raise HTTPException(status_code=500, detail="Failed to send verification email")
+    background_tasks.add_task(email_service.send_verification_email, email, user["username"], token)
     
     return {"message": "Verification email sent. Please check your inbox."}
 
@@ -200,7 +198,9 @@ def update_task(task_id: int, task_update: schemas.TaskUpdate, current_user: dic
     old_status = current_task.get("status")
     new_status = task_update.status
     
-    updated_task = json_storage.update_task(task_id, task_update.dict(exclude_unset=True))
+    # Handle Pydantic v1 vs v2 dict output safely
+    update_data = task_update.model_dump(exclude_unset=True) if hasattr(task_update, 'model_dump') else task_update.dict(exclude_unset=True)
+    updated_task = json_storage.update_task(task_id, update_data)
     if not updated_task:
         raise HTTPException(status_code=404, detail="Task not found")
     

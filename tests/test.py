@@ -44,7 +44,7 @@ def start_servers():
     print(f"{BLUE}{'='*60}{RESET}\n")
     
     # Get paths
-    root_dir = os.path.dirname(os.path.abspath(__file__))
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     backend_dir = os.path.join(root_dir, "backend")
     frontend_dir = os.path.join(root_dir, "frontend")
     

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { WS_URL } from '../api';
 
 const CollaborationContext = createContext(null);
 
@@ -40,11 +41,7 @@ export const CollaborationProvider = ({ children }) => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        // Use ngrok URL if available, otherwise localhost
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-        const wsProtocol = apiUrl.startsWith('https') ? 'wss' : 'ws';
-        const wsHost = apiUrl.replace(/^https?:\/\//, '');
-        const wsUrl = `${wsProtocol}://${wsHost}/ws/${clientIdRef.current}?token=${token}`;
+        const wsUrl = `${WS_URL}/ws/${clientIdRef.current}?token=${token}`;
 
         try {
             wsRef.current = new WebSocket(wsUrl);
