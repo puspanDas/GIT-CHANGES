@@ -169,3 +169,19 @@ class Team(TeamBase):
     
     class Config:
         from_attributes = True
+
+# ==================== Product Strategist Schemas ====================
+
+class PRDGenerateRequest(BaseModel):
+    idea: str
+    okr_id: Optional[str] = None
+
+class PRDStatusUpdate(BaseModel):
+    status: str  # DRAFT, APPROVED, IN_PROGRESS, SHIPPED
+
+class PRDDecomposeRequest(BaseModel):
+    prd_id: str
+
+class ABTestRequest(BaseModel):
+    prd_id: str
+    feature_name: str

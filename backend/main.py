@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, W
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-import schemas, auth, json_storage, ml_service, kpi_service, ai_insights, ai_assistant, dependency_service, collaboration_service, codebase_rag_service, gamification_service, email_service
+import schemas, auth, json_storage, ml_service, kpi_service, ai_insights, ai_assistant, dependency_service, collaboration_service, codebase_rag_service, gamification_service, email_service, prd_service
 from fastapi.staticfiles import StaticFiles
 import os
 import shutil
@@ -11,18 +11,17 @@ import uuid
 app = FastAPI(title="AI Task Manager")
 
 # CORS configuration - allow frontend origins
-# In development with ngrok, allow all origins; in production, restrict to specific origins
+# In development, allow all origins; in production, restrict to specific origins
 is_development = os.getenv("ENVIRONMENT", "development") == "development"
 
 allowed_origins = [
     "http://localhost:5173",
     "http://localhost:3000",
     "http://192.168.1.6:5173",
-    "https://task-manager-frontend-brown-xi.vercel.app",
     os.getenv("FRONTEND_URL", "http://localhost:5173")
 ]
 
-# For ngrok/development, add wildcard patterns
+# For development, add wildcard patterns
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins if not is_development else [],
@@ -615,3 +614,102 @@ def delete_team(team_id: int, current_user: dict = Depends(auth.get_current_user
     if not success:
         raise HTTPException(status_code=404, detail="Team not found")
     return {"message": "Team deleted successfully"}
+
+# ==================== Product Strategist Endpoints ====================
+
+@app.get("/product/okrs")
+def get_okrs(current_user: dict = Depends(auth.get_current_user_json)):
+    """Get all available OKRs for strategic alignment"""
+    return prd_service.get_okrs()
+
+@app.post("/product/prd/generate")
+def generate_prd(request: schemas.PRDGenerateRequest, current_user: dict = Depends(auth.get_current_user_json)):
+    """Generate a PRD from a feature idea and optionally align to an OKR"""
+    if not request.idea or len(request.idea.strip()) < 3:
+        raise HTTPException(status_code=400, detail="Feature idea must be at least 3 characters")
+    
+    prd = prd_service.generate_prd(request.idea, request.okr_id)
+    prd["author"] = current_user["username"]
+    saved = prd_service.save_prd(prd)
+    return saved
+
+@app.get("/product/prds")
+def get_all_prds(current_user: dict = Depends(auth.get_current_user_json)):
+    """Get all saved PRDs"""
+    return prd_service.get_all_prds()
+
+@app.get("/product/prd/{prd_id}")
+def get_prd(prd_id: str, current_user: dict = Depends(auth.get_current_user_json)):
+    """Get a specific PRD by ID"""
+    prd = prd_service.get_prd_by_id(prd_id)
+    if not prd:
+        raise HTTPException(status_code=404, detail="PRD not found")
+    return prd
+
+@app.put("/product/prd/{prd_id}/status")
+def update_prd_status(prd_id: str, status_update: schemas.PRDStatusUpdate, current_user: dict = Depends(auth.get_current_user_json)):
+    """Update PRD status (DRAFT -> APPROVED -> IN_PROGRESS -> SHIPPED)"""
+    valid_statuses = ["DRAFT", "APPROVED", "IN_PROGRESS", "SHIPPED"]
+    if status_update.status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Status must be one of: {', '.join(valid_statuses)}")
+    
+    updated = prd_service.update_prd_status(prd_id, status_update.status)
+    if not updated:
+        raise HTTPException(status_code=404, detail="PRD not found")
+    return updated
+
+@app.delete("/product/prd/{prd_id}")
+def delete_prd(prd_id: str, current_user: dict = Depends(auth.get_current_user_json)):
+    """Delete a PRD"""
+    success = prd_service.delete_prd(prd_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="PRD not found")
+    return {"message": "PRD deleted successfully"}
+
+@app.post("/product/prd/{prd_id}/decompose")
+def decompose_prd(prd_id: str, current_user: dict = Depends(auth.get_current_user_json)):
+    """Decompose a PRD into actionable engineering tasks"""
+    prd = prd_service.get_prd_by_id(prd_id)
+    if not prd:
+        raise HTTPException(status_code=404, detail="PRD not found")
+    
+    tasks = prd_service.decompose_prd_to_tasks(prd)
+    return {"prd_id": prd_id, "prd_title": prd["title"], "tasks": tasks, "total_story_points": sum(t["story_points"] for t in tasks)}
+
+@app.post("/product/prd/{prd_id}/create-tasks")
+def create_tasks_from_prd(prd_id: str, current_user: dict = Depends(auth.get_current_user_json)):
+    """Create actual tasks in the system from a decomposed PRD"""
+    prd = prd_service.get_prd_by_id(prd_id)
+    if not prd:
+        raise HTTPException(status_code=404, detail="PRD not found")
+    
+    task_templates = prd_service.decompose_prd_to_tasks(prd)
+    created_tasks = []
+    
+    for template in task_templates:
+        db_task = json_storage.create_task(
+            title=template["title"],
+            description=template["description"],
+            priority=template["priority"],
+            status="TODO",
+            creator_id=current_user["id"],
+            assignee_id=None,
+            estimated_days=template["estimated_days"],
+            spent_days=0.0,
+            project_id=None,
+            dependencies=[],
+            parent_id=None,
+            labels=[],
+            team_id=None
+        )
+        created_tasks.append(db_task)
+    
+    # Update PRD status to IN_PROGRESS
+    prd_service.update_prd_status(prd_id, "IN_PROGRESS")
+    
+    return {"message": f"Created {len(created_tasks)} tasks from PRD", "tasks": created_tasks}
+
+@app.post("/product/ab-test")
+def simulate_ab_test(request: schemas.ABTestRequest, current_user: dict = Depends(auth.get_current_user_json)):
+    """Simulate A/B test results for a shipped feature"""
+    return prd_service.simulate_ab_test(request.prd_id, request.feature_name)

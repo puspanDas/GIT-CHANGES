@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// Production: Use Render backend, Development: Use localhost or ngrok URL from env
+// Production: Use Render backend, Development: Use localhost or API URL from env
 const isProduction = import.meta.env.PROD || (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && !window.location.hostname.startsWith('192.168.'));
 const API_URL = import.meta.env.VITE_API_URL
     || (isProduction ? 'https://git-changes.onrender.com' : 'http://localhost:8000');
@@ -16,8 +16,6 @@ api.interceptors.request.use((config) => {
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
-    // Skip ngrok browser warning interstitial page
-    config.headers['ngrok-skip-browser-warning'] = 'true';
     return config;
 });
 
@@ -282,6 +280,52 @@ export const createTeam = async (name, description = '') => {
 
 export const deleteTeam = async (teamId) => {
     const response = await api.delete(`/teams/${teamId}`);
+    return response.data;
+};
+
+// Product Strategist API
+export const getOKRs = async () => {
+    const response = await api.get('/product/okrs');
+    return response.data;
+};
+
+export const generatePRD = async (idea, okrId = null) => {
+    const response = await api.post('/product/prd/generate', { idea, okr_id: okrId });
+    return response.data;
+};
+
+export const getAllPRDs = async () => {
+    const response = await api.get('/product/prds');
+    return response.data;
+};
+
+export const getPRD = async (prdId) => {
+    const response = await api.get(`/product/prd/${prdId}`);
+    return response.data;
+};
+
+export const updatePRDStatus = async (prdId, status) => {
+    const response = await api.put(`/product/prd/${prdId}/status`, { status });
+    return response.data;
+};
+
+export const deletePRD = async (prdId) => {
+    const response = await api.delete(`/product/prd/${prdId}`);
+    return response.data;
+};
+
+export const decomposePRD = async (prdId) => {
+    const response = await api.post(`/product/prd/${prdId}/decompose`);
+    return response.data;
+};
+
+export const createTasksFromPRD = async (prdId) => {
+    const response = await api.post(`/product/prd/${prdId}/create-tasks`);
+    return response.data;
+};
+
+export const simulateABTest = async (prdId, featureName) => {
+    const response = await api.post('/product/ab-test', { prd_id: prdId, feature_name: featureName });
     return response.data;
 };
 
